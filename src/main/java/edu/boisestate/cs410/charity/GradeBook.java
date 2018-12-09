@@ -6,18 +6,18 @@ import com.budhash.cliche.ShellFactory;
 import java.io.IOException;
 import java.sql.*;
 
-public class CharityShell {
+public class GradeBook {
     private final Connection db;
 
-    public CharityShell(Connection cxn) {
+    public GradeBook(Connection cxn) {
         db = cxn;
     }
 
     public static void main(String[] args) throws IOException, SQLException {
         String dbUrl = args[0];
         try (Connection cxn = DriverManager.getConnection("jdbc:" + dbUrl)) {
-            CharityShell shell = new CharityShell(cxn);
-            ShellFactory.createConsoleShell("charity", "", shell)
+            GradeBook shell = new GradeBook(cxn);
+            ShellFactory.createConsoleShell("grades", "", shell)
                     .commandLoop();
         }
     }
