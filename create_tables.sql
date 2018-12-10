@@ -7,7 +7,7 @@ create table student (
 
 create table class (
 	c_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
-	desc VARCHAR(50)
+	description VARCHAR(50)
 );
 
 create table section (
@@ -36,7 +36,7 @@ create table type (
 
 create table assignment (
 	a_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
-	desc VARCHAR(50),
+	description VARCHAR(50),
 	title VARCHAR(50),
 	tot_points INTEGER NOT NULL,
 	rec_points INTEGER,
