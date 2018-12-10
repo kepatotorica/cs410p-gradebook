@@ -1,5 +1,5 @@
 create table student (
-	stu_id INT,
+	stu_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
 	f_name VARCHAR(50),
 	l_name VARCHAR(50),
 	username VARCHAR(50)

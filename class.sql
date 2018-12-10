@@ -1,7 +1,8 @@
 create table class (
-	c_id INT,
+	c_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
 	desc VARCHAR(50)
 );
+
 insert into class (c_id, desc) values (1, 'Siouxie');
 insert into class (c_id, desc) values (2, 'Elise');
 insert into class (c_id, desc) values (3, 'Moreen');

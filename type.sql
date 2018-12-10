@@ -1,9 +1,11 @@
 create table type (
-	t_id INT,
+	t_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
 	type VARCHAR(12),
 	weight DECIMAL(2,1),
-	sec_id INT
+	sec_id INTEGER NOT NULL REFERENCES section
 );
+
+
 insert into type (t_id, type, weight, sec_id) values (1, 'project', 0.1, 202);
 insert into type (t_id, type, weight, sec_id) values (2, 'homework', 0.0, 775);
 insert into type (t_id, type, weight, sec_id) values (3, 'extra credit', 0.3, 520);

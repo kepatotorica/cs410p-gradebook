@@ -1,12 +1,12 @@
 create table section (
-	sec_id INT,
-	number INT,
+	sec_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
+	number INTEGER NOT NULL,
 	last_name VARCHAR(50),
 	start_date DATE,
 	end_date DATE,
 	start_time VARCHAR(50),
 	end_time VARCHAR(50),
-	c_id INT
+	c_id INTEGER NOT NULL REFERENCES class
 );
 insert into section (sec_id, number, last_name, start_date, end_date, start_time, end_time, c_id) values (1, 49, 'Stihl', '11/10/2018', '8/14/2017', '7:03 PM', '11:39 PM', 1);
 insert into section (sec_id, number, last_name, start_date, end_date, start_time, end_time, c_id) values (2, 61, 'Russo', '7/4/2018', '8/29/2018', '9:05 PM', '6:52 AM', 2);

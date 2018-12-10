@@ -1,12 +1,14 @@
 create table assignment (
-	a_id INT,
+	a_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
 	desc VARCHAR(50),
 	title VARCHAR(50),
-	tot_points INT,
-	rec_points INT,
-	stu_id INT,
-	t_id INT
+	tot_points INTEGER NOT NULL,
+	rec_points INTEGER,
+	stu_id INTEGER NOT NULL REFERENCES student,
+	t_id INTEGER NOT NULL REFERENCES type
 );
+
+
 insert into assignment (a_id, desc, title, tot_points, rec_points, stu_id, t_id) values (1, 'Unsp injury of superficial vein at shldr/up arm, left arm', 'Web Developer III', 65, 110, 683, 419);
 insert into assignment (a_id, desc, title, tot_points, rec_points, stu_id, t_id) values (2, 'Cocaine abuse, uncomplicated', 'Operator', 159, 145, 638, 97);
 insert into assignment (a_id, desc, title, tot_points, rec_points, stu_id, t_id) values (3, 'Spontaneous rupture of extensor tendons, right upper arm', 'Geological Engineer', 79, 175, 13, 347);

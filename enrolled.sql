@@ -1,8 +1,9 @@
 create table enrolled (
-	e_id INT,
-	stu_id INT,
-	sec_id INT
+	e_id  INTEGER PRIMARY KEY AUTO_INCREMENT,
+	stu_id INTEGER NOT NULL REFERENCES student,
+	sec_id INTEGER NOT NULL REFERENCES section
 );
+
 insert into enrolled (e_id, stu_id, sec_id) values (1, 981, 325);
 insert into enrolled (e_id, stu_id, sec_id) values (2, 30, 754);
 insert into enrolled (e_id, stu_id, sec_id) values (3, 431, 15);
