@@ -27,26 +27,22 @@ public class GradeBook {
 // in:   new-class Nathaniel Spring 2006 1 desc
 // not:  new-class Nathaniel Spring 2007 1 desc
 // not:  new-class Nathaniel Spring 2008 1 desc
+
+//    select-class Nathaniel : Spring 2008 & success
+//    select-class Nathaniel Spring 2007 : Spring 2007 & fail
+//    select-class Nathaniel Fall 1995 & success
     @Command
     public void selectClass(String pName) throws SQLException {
-        int numSec = 0;
-        int c_id = findClass(pName);
-        if(c_id == -1){
-            System.out.println("We didn't find a class");
-            return; //aka we faild
-        }
-
-        numSec = selectSection(c_id);
-        if(numSec != 1){
-            System.out.println("Class didn't have exactally one section");
-            return; //didn't find a single section
-        }
-
-        System.out.println("Found a class with exactally one section");
+        selectClass(pName, "None", -1, -1);
     }
 
     @Command
     public void selectClass(String pName, String pTerm, int pYear) throws SQLException {
+        selectClass(pName, pTerm, pYear, -1);
+    }
+
+    @Command
+    public void selectClass(String pName, String pTerm, int pYear, int sNumber) throws SQLException {
         int numSec = 0;
         int c_id = findClass(pName, pTerm, pYear);
         if(c_id == -1){
@@ -54,7 +50,7 @@ public class GradeBook {
             return; //aka we faild
         }
 
-        numSec = selectSection(c_id);
+        numSec = selectSection(c_id, sNumber);
         if(numSec != 1){
             System.out.println("Class didn't have exactally one section");
             return; //didn't find a single section
@@ -68,10 +64,22 @@ public class GradeBook {
 
     @Command
     public int selectSection(int c_id) throws SQLException {
+        return selectSection(c_id, -1);
+    }
+
+
+    @Command
+    public int selectSection(int c_id , int sNumber) throws SQLException {
         int sec_id = -1;
         int numSec = 0;
-        String queryCheck =
-                "select * from section where c_id='" + c_id + "'";
+        String queryCheck;
+        if(sNumber == -1) {
+            queryCheck =
+                    "select * from section where c_id='" + c_id + "'";
+        }else{
+            queryCheck =
+                    "select * from section where c_id='" + c_id + "' and number='" + sNumber + "'";
+        }
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -82,12 +90,6 @@ public class GradeBook {
             }
         }
         return numSec;
-    }
-
-
-    @Command
-    public void selectSection(int number, int c_id) throws SQLException {
-
     }
 
     // select-class Nathaniel
