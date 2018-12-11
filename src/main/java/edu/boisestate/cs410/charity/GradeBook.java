@@ -35,6 +35,9 @@ public class GradeBook {
 //    select-class Nathaniel : Spring 2008 & success
 //    select-class Nathaniel Spring 2007 : Spring 2007 & fail
 //    select-class Nathaniel Fall 1995 86 & success
+
+
+//START CLASS---------------------------------------------------------------------------------------------------------
     @Command
     public void selectClass(String pName) throws SQLException {
         selectClass(pName, "None", -1, -1);
@@ -56,13 +59,13 @@ public class GradeBook {
 
         numSec = selectSection(c_id, sNumber);
         if(numSec != 1){
-            System.out.println("Class didn't have exactally one section");
+//            System.out.println("Class didn't have exactally one section");
             activeClass.copy(prevClass);
             return; //didn't find a single section
         }
 
         prevClass.copy(activeClass);
-        System.out.println("Found a class with exactally one section");
+//        System.out.println("Found a class with exactally one section");
 
 
 
@@ -154,7 +157,7 @@ public class GradeBook {
                 }
             }
         }
-        System.out.println(activeClass.toString());
+        System.out.println(activeClass.toString() + activeSecId);
         return c_id;
     }
 
@@ -182,7 +185,6 @@ public class GradeBook {
                     activeClass.setYear(rs.getInt("year"));
                     activeClass.setDescription(rs.getString("description"));
                 }
-//                System.out.println("any matches? " + any );
             }
         }
 
@@ -252,6 +254,31 @@ public class GradeBook {
 
         }
     }
+
+
+//END CLASS---------------------------------------------------------------------------------------------------------
+
+//START CATEGORIES---------------------------------------------------------------------------------------------------------
+    @Command
+    public void showCategories() throws SQLException {
+        String queryCheck;
+        String type;
+        double weight;
+            queryCheck =
+                    "select type, weight from type join section using(sec_id) where sec_id="+activeSecId+"";
+
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    type = rs.getString("type");
+                    weight = rs.getDouble("weight");
+                    System.out.println(type + " weight " + weight * 100 + "%");
+                }
+            }
+        }
+    }
+
+// END CATEGORIES---------------------------------------------------------------------------------------------------------
 
 //    @Command
 //    public void findDonor(String donorName) throws SQLException {
