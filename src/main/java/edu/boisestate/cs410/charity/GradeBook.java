@@ -56,19 +56,12 @@ public class GradeBook {
             System.out.println("We didn't find a class");
             return; //aka we faild
         }
-
         numSec = selectSection(c_id, sNumber);
-        if(numSec != 1){
-//            System.out.println("Class didn't have exactally one section");
-            activeClass.copy(prevClass);
-            return; //didn't find a single section
-        }
-
+            if (numSec != 1 && sNumber == -1) {
+                activeClass.copy(prevClass);
+                return; //didn't find a single section
+            }
         prevClass.copy(activeClass);
-//        System.out.println("Found a class with exactally one section");
-
-
-
     }
 
     @Command
@@ -157,7 +150,7 @@ public class GradeBook {
                 }
             }
         }
-        System.out.println(activeClass.toString() + activeSecId);
+        System.out.println(activeClass.toString() + " section: " + activeSecId);
         return c_id;
     }
 
