@@ -1,3 +1,4 @@
+-- ALTER SEQUENCE student_stu_id_seq RESTART WITH 1000
 create table student (
 	stu_id serial PRIMARY KEY,
 	f_name VARCHAR(50),
@@ -5,6 +6,7 @@ create table student (
 	username VARCHAR(50)
 );
 
+-- ALTER SEQUENCE class_c_id_seq RESTART WITH 1000
 create table class (
 	c_id serial PRIMARY KEY,
 	name VARCHAR(50),
@@ -13,6 +15,7 @@ create table class (
 	description VARCHAR(255)
 );
 
+-- ALTER SEQUENCE section_sec_id_seq RESTART WITH 1000
 create table section (
 	sec_id serial PRIMARY KEY,
 	number INTEGER NOT NULL,
@@ -24,12 +27,14 @@ create table section (
 	c_id INTEGER NOT NULL REFERENCES class
 );
 
+-- ALTER SEQUENCE enrolled_e_id_seq RESTART WITH 1000
 create table enrolled (
 	e_id serial PRIMARY KEY,
 	stu_id INTEGER NOT NULL REFERENCES student,
 	sec_id INTEGER NOT NULL REFERENCES section
 );
 
+-- ALTER SEQUENCE type_t_id_seq RESTART WITH 1000
 create table type (
 	t_id serial PRIMARY KEY,
 	type VARCHAR(12),
@@ -37,6 +42,8 @@ create table type (
 	sec_id INTEGER NOT NULL REFERENCES section
 );
 
+
+-- ALTER SEQUENCE assignment_a_id_seq RESTART WITH 1000
 create table assignment (
 	a_id serial PRIMARY KEY,
 	description VARCHAR(255),
@@ -6057,3 +6064,11 @@ insert into assignment (a_id, description, title, tot_points, rec_points, stu_id
 insert into assignment (a_id, description, title, tot_points, rec_points, stu_id, t_id) values (998, 'Unsp injury of superfic vn at shldr/up arm, unsp arm, subs', 'Data Coordiator', 66, 143, 16, 186);
 insert into assignment (a_id, description, title, tot_points, rec_points, stu_id, t_id) values (999, 'Labyrinthine fistula, unspecified ear', 'Librarian', 116, 123, 662, 179);
 insert into assignment (a_id, description, title, tot_points, rec_points, stu_id, t_id) values (1000, 'Subluxation of C6/C7 cervical vertebrae, sequela', 'Account Coordinator', 98, 115, 327, 785);
+
+
+ALTER SEQUENCE student_stu_id_seq RESTART WITH 1000
+ALTER SEQUENCE class_c_id_seq RESTART WITH 1000
+ALTER SEQUENCE section_sec_id_seq RESTART WITH 1000
+ALTER SEQUENCE enrolled_e_id_seq RESTART WITH 1000
+ALTER SEQUENCE type_t_id_seq RESTART WITH 1000
+ALTER SEQUENCE assignment_a_id_seq RESTART WITH 1000
