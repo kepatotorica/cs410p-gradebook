@@ -72,15 +72,26 @@ public class GradeBook {
 
     }
 
-    // select-class Nathaniel
     @Command
     public int findClass(String pName) throws SQLException {
+        return findClass(pName, "None");
+    }
+    // select-class Nathaniel
+    @Command
+    public int findClass(String pName, String term) throws SQLException {
         int c_id = -1;
         int maxTerm = -1; // 0 = spring, 1 = summer,  2 = fall
         int currTerm = -1;
         int year = -1;
-        String queryCheck =
-                " select * from class where name='" + pName + "' ORDER BY year DESC  LIMIT 3";
+        String queryCheck;
+
+        if(term.equals("None")) {
+            queryCheck =
+                    " select * from class where name='" + pName + "' ORDER BY year DESC  LIMIT 3";
+        }else{
+            queryCheck =
+                    " select * from class where name='" + pName + "' and term='" + term + "' ORDER BY year DESC  LIMIT 3";
+        }
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
