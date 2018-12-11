@@ -13,7 +13,7 @@ public class Class {
         this.year = year;
         this.description = description;
     }
-    
+
     public int getC_id() {
         return c_id;
     }

@@ -8,7 +8,8 @@ import java.sql.*;
 
 public class GradeBook {
     private final Connection db;
-
+    private Class activeClass;
+    private int sectionNum;
     public GradeBook(Connection cxn) {
         db = cxn;
     }
@@ -25,11 +26,55 @@ public class GradeBook {
 // in:   new-class Nathaniel Spring 2006 1 desc
 // not:  new-class Nathaniel Spring 2007 1 desc
     @Command
-    public void newClass(String pName, String pTerm, int pYear, int pSection, String pDescription) throws SQLException {
+    public void selectClass(String pName) throws SQLException {
+        int numSec = 0;
+        int c_id = findClass(pName);
+        if(c_id == -1){
+            return; //aka we faild
+        }
 
+        int sec_id = -1;
+        String queryCheck =
+                "select * from section where c_id='" + c_id + "'";
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    sec_id  = rs.getInt("sec_id");
+                    numSec++;
+                    if(numSec>1){
+                        System.out.println("Multiple sections found");
+                        return; //we have too many sections
+                    }
+                }
+            }
+        }
+
+    }
+
+    @Command
+    public int findClass(String pName) throws SQLException {
+        int c_id = -1;
+        String queryCheck =
+                " select * from class where name='" + pName + "' ORDER BY year DESC  LIMIT 1";
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    c_id = rs.getInt("c_id");
+                    activeClass.setC_id(c_id);
+                    activeClass.setName(rs.getString("name"));
+                    activeClass.setTerm(rs.getString("term"));
+                    activeClass.setYear(rs.getInt("year"));
+                    activeClass.setDescription(rs.getString("description"));
+                }
+            }
+        }
+        return c_id;
+    }
+
+    @Command
+    public void newClass(String pName, String pTerm, int pYear, int pSection, String pDescription) throws SQLException {
         int c_id = classCreateOrId(pName, pTerm, pYear, pDescription);
         newSection(pSection, c_id);
-
     }
 
     @Command
