@@ -8,14 +8,15 @@ import java.sql.*;
 
 public class GradeBook {
     private final Connection db;
-    private Class activeClass;
-    private int sectionNum;
+    private static Class activeClass;
+    private int activeSecId;
     public GradeBook(Connection cxn) {
         db = cxn;
     }
 
     public static void main(String[] args) throws IOException, SQLException {
         String dbUrl = args[0];
+        activeClass = new Class("name", "term", 1, "description");
         try (Connection cxn = DriverManager.getConnection("jdbc:" + dbUrl)) {
             GradeBook shell = new GradeBook(cxn);
             ShellFactory.createConsoleShell("grades", "", shell)
@@ -30,24 +31,43 @@ public class GradeBook {
         int numSec = 0;
         int c_id = findClass(pName);
         if(c_id == -1){
+            System.out.println("We didn't find a class");
             return; //aka we faild
         }
 
+        numSec = selectSection(c_id);
+        if(numSec != 1){
+            System.out.println("Class didn't have exactally one section");
+            return; //didn't find a single section
+        }
+
+        System.out.println("Found a class with exactally one section");
+
+
+
+    }
+
+    @Command
+    public int selectSection(int c_id) throws SQLException {
         int sec_id = -1;
+        int numSec = -1;
         String queryCheck =
                 "select * from section where c_id='" + c_id + "'";
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     sec_id  = rs.getInt("sec_id");
+                    activeSecId = sec_id;
                     numSec++;
-                    if(numSec>1){
-                        System.out.println("Multiple sections found");
-                        return; //we have too many sections
-                    }
                 }
             }
         }
+        return numSec;
+    }
+
+
+    @Command
+    public void selectSection(int number, int c_id) throws SQLException {
 
     }
 
