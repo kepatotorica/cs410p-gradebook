@@ -53,6 +53,14 @@ public class Class {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public void copy(Class copy){
+        this.name = copy.getName();
+        this.term = copy.getTerm();
+        this.year = copy.getYear();
+        this.description = copy.getDescription();
+    }
+
     public String toString(){
         return "Name: <" + name + ">\n term: <" + term + ">\n year: <" + year + ">\n description: <" + description + ">\n";
     }

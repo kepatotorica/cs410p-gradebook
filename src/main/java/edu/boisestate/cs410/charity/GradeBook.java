@@ -9,14 +9,18 @@ import java.sql.*;
 public class GradeBook {
     private final Connection db;
     private static Class activeClass;
+    private static Class prevClass;
     private int activeSecId;
+    private int activeSecNum;
     public GradeBook(Connection cxn) {
         db = cxn;
     }
 
     public static void main(String[] args) throws IOException, SQLException {
         String dbUrl = args[0];
-        activeClass = new Class("name", "term", 1, "description");
+        activeClass = new Class("name", "term", -1, "description");
+        prevClass = new Class("name", "term", -1, "description");
+//        prevClass.copy(activeClass);
         try (Connection cxn = DriverManager.getConnection("jdbc:" + dbUrl)) {
             GradeBook shell = new GradeBook(cxn);
             ShellFactory.createConsoleShell("grades", "", shell)
@@ -30,7 +34,7 @@ public class GradeBook {
 
 //    select-class Nathaniel : Spring 2008 & success
 //    select-class Nathaniel Spring 2007 : Spring 2007 & fail
-//    select-class Nathaniel Fall 1995 & success
+//    select-class Nathaniel Fall 1995 86 & success
     @Command
     public void selectClass(String pName) throws SQLException {
         selectClass(pName, "None", -1, -1);
@@ -53,13 +57,24 @@ public class GradeBook {
         numSec = selectSection(c_id, sNumber);
         if(numSec != 1){
             System.out.println("Class didn't have exactally one section");
+            activeClass.copy(prevClass);
             return; //didn't find a single section
         }
 
+        prevClass.copy(activeClass);
         System.out.println("Found a class with exactally one section");
 
 
 
+    }
+
+    @Command
+    public void showClass(){
+        if(activeClass.getYear() != -1) {
+            System.out.println(activeClass.toString() + " section: " + activeSecNum);
+        }else{
+            System.out.println("No active class");
+        }
     }
 
     @Command
@@ -85,6 +100,7 @@ public class GradeBook {
                 while (rs.next()) {
                     sec_id  = rs.getInt("sec_id");
                     activeSecId = sec_id;
+                    activeSecNum = rs.getInt("number");
                     numSec++;
                 }
             }
