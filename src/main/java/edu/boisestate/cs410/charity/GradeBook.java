@@ -43,6 +43,24 @@ public class GradeBook {
         }
 
         System.out.println("Found a class with exactally one section");
+    }
+
+    @Command
+    public void selectClass(String pName, String pTerm, int pYear) throws SQLException {
+        int numSec = 0;
+        int c_id = findClass(pName, pTerm, pYear);
+        if(c_id == -1){
+            System.out.println("We didn't find a class");
+            return; //aka we faild
+        }
+
+        numSec = selectSection(c_id);
+        if(numSec != 1){
+            System.out.println("Class didn't have exactally one section");
+            return; //didn't find a single section
+        }
+
+        System.out.println("Found a class with exactally one section");
 
 
 
@@ -72,25 +90,26 @@ public class GradeBook {
 
     }
 
-    @Command
-    public int findClass(String pName) throws SQLException {
-        return findClass(pName, "None");
-    }
     // select-class Nathaniel
     @Command
-    public int findClass(String pName, String term) throws SQLException {
+    public int findClass(String pName) throws SQLException {
+        return findClass(pName, "None", -1);
+    }
+
+    @Command
+    public int findClass(String pName, String pTerm, int pYear) throws SQLException {
         int c_id = -1;
         int maxTerm = -1; // 0 = spring, 1 = summer,  2 = fall
         int currTerm = -1;
         int year = -1;
         String queryCheck;
 
-        if(term.equals("None")) {
+        if(pTerm.equals("None")) {
             queryCheck =
                     " select * from class where name='" + pName + "' ORDER BY year DESC  LIMIT 3";
         }else{
             queryCheck =
-                    " select * from class where name='" + pName + "' and term='" + term + "' ORDER BY year DESC  LIMIT 3";
+                    " select * from class where name='" + pName + "' and term='" + pTerm + "' and year='" + pYear + "' ORDER BY year DESC  LIMIT 3";
         }
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
