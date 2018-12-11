@@ -252,6 +252,8 @@ public class GradeBook {
 //END CLASS---------------------------------------------------------------------------------------------------------
 
 //START CATEGORIES---------------------------------------------------------------------------------------------------------
+    // select-class Thia Summer 1992 8
+    // show-categories
     @Command
     public void showCategories() throws SQLException {
         String queryCheck;
@@ -260,12 +262,18 @@ public class GradeBook {
             queryCheck =
                     "select type, weight from type join section using(sec_id) where sec_id="+activeSecId+"";
 
+        System.out.println("TYPE\t\t\t|WEIGHT");
+        System.out.println("========================");
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     type = rs.getString("type");
                     weight = rs.getDouble("weight");
-                    System.out.println(type + " weight " + weight * 100 + "%");
+                    if(type.length() >= "extra credit".length()) {
+                        System.out.println(type + "\t|" + weight * 100 + "%");
+                    }else{
+                        System.out.println(type + "\t\t\t|" + weight * 100 + "%");
+                    }
                 }
             }
         }
