@@ -26,6 +26,7 @@ public class GradeBook {
 
 // in:   new-class Nathaniel Spring 2006 1 desc
 // not:  new-class Nathaniel Spring 2007 1 desc
+// not:  new-class Nathaniel Spring 2008 1 desc
     @Command
     public void selectClass(String pName) throws SQLException {
         int numSec = 0;
@@ -50,7 +51,7 @@ public class GradeBook {
     @Command
     public int selectSection(int c_id) throws SQLException {
         int sec_id = -1;
-        int numSec = -1;
+        int numSec = 0;
         String queryCheck =
                 "select * from section where c_id='" + c_id + "'";
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
@@ -71,23 +72,41 @@ public class GradeBook {
 
     }
 
+    // select-class Nathaniel
     @Command
     public int findClass(String pName) throws SQLException {
         int c_id = -1;
+        int maxTerm = -1; // 0 = spring, 1 = summer,  2 = fall
+        int currTerm = -1;
+        int year = -1;
         String queryCheck =
-                " select * from class where name='" + pName + "' ORDER BY year DESC  LIMIT 1";
+                " select * from class where name='" + pName + "' ORDER BY year DESC  LIMIT 3";
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    c_id = rs.getInt("c_id");
-                    activeClass.setC_id(c_id);
-                    activeClass.setName(rs.getString("name"));
-                    activeClass.setTerm(rs.getString("term"));
-                    activeClass.setYear(rs.getInt("year"));
-                    activeClass.setDescription(rs.getString("description"));
+                    if(c_id == -1){
+                        year = rs.getInt("year");//first part of query returns oldest year
+                    }
+                    if(rs.getString("term").toLowerCase().equals("spring")){
+                        currTerm = 0;
+                    }else if(rs.getString("term").toLowerCase().equals("summer")){
+                        currTerm = 1;
+                    }else if(rs.getString("term").toLowerCase().equals("fall")){
+                        currTerm = 2;
+                    }
+                    if(maxTerm < currTerm && year <= rs.getInt("year")) { //if we find a new max
+                        c_id = rs.getInt("c_id");
+                        activeClass.setC_id(c_id);
+                        activeClass.setName(rs.getString("name"));
+                        activeClass.setTerm(rs.getString("term"));
+                        activeClass.setYear(rs.getInt("year"));
+                        activeClass.setDescription(rs.getString("description"));
+                        maxTerm = currTerm;
+                    }
                 }
             }
         }
+        System.out.println(activeClass.toString());
         return c_id;
     }
 

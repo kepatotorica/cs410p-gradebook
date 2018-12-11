@@ -53,4 +53,7 @@ public class Class {
     public void setDescription(String description) {
         this.description = description;
     }
+    public String toString(){
+        return "Name: <" + name + ">\n term: <" + term + ">\n year: <" + year + ">\n description: <" + description + ">\n";
+    }
 }
