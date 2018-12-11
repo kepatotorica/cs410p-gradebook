@@ -62,6 +62,7 @@ public class GradeBook {
                 return; //didn't find a single section
             }
         prevClass.copy(activeClass);
+        System.out.println(activeClass.toString() + " section: " + activeSecNum);
     }
 
     @Command
@@ -150,7 +151,6 @@ public class GradeBook {
                 }
             }
         }
-        System.out.println(activeClass.toString() + " section: " + activeSecId);
         return c_id;
     }
 
