@@ -166,7 +166,6 @@ public class GradeBook {
 
     @Command
     public int classCreateOrId(String pName, String pTerm, int pYear, String pDescription) throws SQLException {
-        System.out.println("adding a new class");
         Boolean any = false;
         int c_id = -1;
         String queryCheck =
@@ -174,15 +173,21 @@ public class GradeBook {
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+                    System.out.println("Class already exists, selecting it");
                     any = true;
                     c_id = rs.getInt("c_id");
+                    activeClass.setC_id(c_id);
+                    activeClass.setName(rs.getString("name"));
+                    activeClass.setTerm(rs.getString("term"));
+                    activeClass.setYear(rs.getInt("year"));
+                    activeClass.setDescription(rs.getString("description"));
                 }
-                System.out.println("any matches? " + any );
+//                System.out.println("any matches? " + any );
             }
         }
 
         if(!any) {
-            System.out.println("in the add");
+            System.out.println("adding a new class");
             String query =
                     "insert into class (name, term, year, description) \n" +
                             "values ('" + pName + "', '" + pTerm + "', " + pYear + ", '" + pDescription + "')";
@@ -195,6 +200,11 @@ public class GradeBook {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         c_id = rs.getInt("c_id");
+                        activeClass.setC_id(c_id);
+                        activeClass.setName(rs.getString("name"));
+                        activeClass.setTerm(rs.getString("term"));
+                        activeClass.setYear(rs.getInt("year"));
+                        activeClass.setDescription(rs.getString("description"));
                     }
                 }
             }
@@ -211,21 +221,35 @@ public class GradeBook {
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+                    System.out.println("A section already exists");
                     alreadyASection = true;
                     sec_id  = rs.getInt("sec_id");
+                    activeSecId = sec_id;
+                    activeSecNum = rs.getInt("number");
                 }
-                System.out.println("any matches? " + alreadyASection );
+//                System.out.println("any matches? " + alreadyASection );
             }
         }
 
         if(!alreadyASection) {
-            System.out.println("adding a new section");
+            System.out.println("Adding a new section");
             String query =
                     "insert into section (number, c_id) values (" + number + ", " + c_id + ")";
-
+            System.out.println(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
+
+            try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        sec_id  = rs.getInt("sec_id");
+                        activeSecId = sec_id;
+                        activeSecNum = rs.getInt("number");
+                    }
+                }
+            }
+
         }
     }
 
