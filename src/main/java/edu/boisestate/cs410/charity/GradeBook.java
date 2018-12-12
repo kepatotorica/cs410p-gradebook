@@ -408,7 +408,6 @@ public class GradeBook {
                 "join section USING(sec_id) "+
                 "where sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"' "+
                 "order by(type)";
-//        System.out.println(queryCheck);
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -418,9 +417,7 @@ public class GradeBook {
                             "set description='"+description+"', points="+points+" "+
                             "from section join type USING(sec_id) "+
                             "where section.sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"' ";
-//                    System.out.println(updateQuery);
                     alreadyAnItem = true;
-                    System.out.print(updateQuery);
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
                         s.executeUpdate();
                     }
@@ -434,7 +431,6 @@ public class GradeBook {
                     "insert into assignment (description, title, points, t_id) "+
                     "Select '"+description+"', '"+title+"', "+points+", t_id from type Join section using(sec_id) "+
                     "where sec_id='"+activeSecId+"' and type='"+type+"' LIMIT 1";
-//                System.out.println(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
@@ -512,6 +508,51 @@ public class GradeBook {
         }
     }
 }
+
+    @Command
+    public void grade(String title, String username, int points) throws SQLException {
+        Boolean alreadyAGrade = false;
+        int sec_id = -1;
+        String queryCheck =
+                "select title, type, description, recieved from assignment"+
+                "join type USING(t_id)"+
+                "join section USING(sec_id)"+
+                "join grade USING(a_id)"+
+                "where sec_id='"+activeSecId+"' and title='"+title+"'"+
+                "order by(type)";
+
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    System.out.println("This item already exists, updating it instead");
+                    String updateQuery = "";
+//                            "update assignment "+
+//                            "set description='"+description+"', points="+points+" "+
+//                            "from section join type USING(sec_id) "+
+//                            "where section.sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"' ";
+//                    System.out.println(updateQuery);
+                    alreadyAGrade = true;
+//                    System.out.print(updateQuery);
+                    try (PreparedStatement s = db.prepareStatement(updateQuery)) {
+                        s.executeUpdate();
+                    }
+                }
+            }
+        }
+
+        if(!alreadyAGrade) {
+            System.out.println("Adding a new item");
+            String query =
+                    "";
+//                    "insert into assignment (description, title, points, t_id) "+
+//                    "Select '"+description+"', '"+title+"', "+points+", t_id from type Join section using(sec_id) "+
+//                    "where sec_id='"+activeSecId+"' and type='"+type+"' LIMIT 1";
+                    System.out.print("");
+            try (PreparedStatement stmt = db.prepareStatement(query)) {
+                stmt.executeUpdate();
+            }
+        }
+    }
 //for seeing if there is already a grade
 // String queryCheck =
 //                "select title, type, description, recieved from assignment"+
