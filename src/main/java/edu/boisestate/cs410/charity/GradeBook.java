@@ -605,8 +605,13 @@ public void studentGrades(String username) throws SQLException {
         return;
     }
 
-    String uName;
     String query;
+    String type;
+    String title;
+    String recieved;
+    int pRec;
+    int points;
+
     int stu_id = -1;
 
     query =
@@ -628,18 +633,33 @@ public void studentGrades(String username) throws SQLException {
 
     if(stu_id != -1){//if we found a matching user
         query =
-                "select stu_id from student " +
-                "join enrolled using(stu_id) " +
-                "join section using(sec_id) " +
-                "where username='"+username+"' and sec_id='"+activeSecId+"'";
+                "select username, type, title, recieved, points from assignment " +
+                "join type using(t_id) " +
+                "join enrolled using(sec_id) " +
+                "join student using(stu_id) " +
+                "left join grade using(a_id) " +
+                "where username='"+username+"' and sec_id="+activeSecId+" " +
+                "Order by type";
 
-
-
+//                System.out.println(query);
         try (PreparedStatement stmt = db.prepareStatement(query)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    System.out.println("Found student in this class!");
-                    stu_id = rs.getInt("stu_id");
+
+                    type = rs.getString("type");
+                    title = rs.getString("title");
+                    points = rs.getInt("points");
+                    recieved = rs.getString("recieved");
+
+                    System.out.println(username + ", " + type + ", " + title + ", "+recieved+", " + points);
+//                    if(recieved.equals("null")){
+//                        System.out.println(username + ", " + type + ", " + title + ", NULL, " + points);
+//                    }else{
+//                        pRec = Integer.parseInt(recieved);
+//                        System.out.println(username + ", " + type + ", " + title + ", " + pRec + ", " + points);
+//                    }
+
+
                 }
             }
         }
