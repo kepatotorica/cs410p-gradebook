@@ -10,14 +10,15 @@ public class GradeBook {
     private final Connection db;
     private static Class activeClass;
     private static Class prevClass;
-    private int activeSecId;
-    private int activeSecNum;
+    private static int activeSecId;
+    private static int activeSecNum;
     public GradeBook(Connection cxn) {
         db = cxn;
     }
 
     public static void main(String[] args) throws IOException, SQLException {
         String dbUrl = args[0];
+        activeSecId = -1;
         activeClass = new Class("name", "term", -1, "description");
         prevClass = new Class("name", "term", -1, "description");
 //        prevClass.copy(activeClass);
@@ -255,6 +256,10 @@ public class GradeBook {
     // show-categories
     @Command
     public void showCategories() throws SQLException {
+        if(activeClass.getYear() != -1) {
+            System.out.println("No active class");
+            return;
+        }
         String queryCheck;
         String type;
         double weight;
@@ -311,6 +316,10 @@ public class GradeBook {
 
     @Command
     public void showItems() throws SQLException {
+        if(activeClass.getYear() != -1) {
+            System.out.println("No active class");
+            return;
+        }
         String queryCheck;
         String type;
         String weight;
@@ -318,7 +327,8 @@ public class GradeBook {
         int rec_points;
 
         queryCheck =
-                "select type, weight from type join section using(sec_id) where sec_id="+activeSecId+"";
+                "select type as category, title, points from assignment join type USING(t_id) join section USING(sec_id) where sec_id='"+activeSecId+"'" +
+                        "order by(type)";
 
         System.out.println("TYPE\t\t\t|WEIGHT");
         System.out.println("========================");
@@ -410,6 +420,10 @@ public class GradeBook {
 
     @Command
     public void showStudents(String search) throws SQLException {
+        if(activeClass.getYear() != -1) {
+            System.out.println("No active class");
+            return;
+        }
         String fName = "";
         String lName = "";
         String query;
