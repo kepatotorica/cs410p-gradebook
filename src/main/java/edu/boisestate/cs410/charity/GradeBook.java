@@ -727,13 +727,21 @@ public void studentGrades(String username1) throws SQLException {
                         }
                     }
 
-                    if(username1 != "-1") {
-                        System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0 * subTotalRec) / subTotalPos + "%\n");
-                    }
                     totalPos += subTotalPos;
                     totalRec += subTotalRec;
+                    double total = 100 * (1.0* totalRec)/totalPos;
+                    if(subTotalPos == 0){
+                        total = 0;
+                    }
+                    if(username1 != "-1") {
+                        System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0 * subTotalRec) / subTotalPos + "%\n");
+                        System.out.printf("\tOverall Grade: %.2f%%\n", total);
+                    }else{
+                        System.out.printf("\t%-22s%-22s%-22s%-22s%-22s%.2f%%\n", username, stu_id, f_name, l_name, totalRec +"/"+ totalPos + " =", total);
+                    }
 
-                    System.out.printf("\t%-22s%-22s%-22s%-22s%-22s%-22s\n", username, stu_id, f_name, l_name, totalRec +"/"+ totalPos + " =", 100 * (1.0* totalRec)/totalPos + "%");
+
+
                 }else{
                     System.out.println("No user " + username + " found in class " + activeClass.getName());
                 }
