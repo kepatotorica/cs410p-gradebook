@@ -35,6 +35,9 @@ public class GradeBook {
 //    select-class Nathaniel : Spring 2008 & success
 //    select-class Nathaniel Spring 2007 : Spring 2007 & fail
 //    select-class Nathaniel Fall 1995 86 & success
+
+
+//START CLASS---------------------------------------------------------------------------------------------------------
     @Command
     public void selectClass(String pName) throws SQLException {
         selectClass(pName, "None", -1, -1);
@@ -53,19 +56,13 @@ public class GradeBook {
             System.out.println("We didn't find a class");
             return; //aka we faild
         }
-
         numSec = selectSection(c_id, sNumber);
-        if(numSec != 1){
-            System.out.println("Class didn't have exactally one section");
-            activeClass.copy(prevClass);
-            return; //didn't find a single section
-        }
-
+            if (numSec != 1 && sNumber == -1) {
+                activeClass.copy(prevClass);
+                return; //didn't find a single section
+            }
         prevClass.copy(activeClass);
-        System.out.println("Found a class with exactally one section");
-
-
-
+        System.out.println(activeClass.toString() + " section: " + activeSecNum);
     }
 
     @Command
@@ -154,7 +151,6 @@ public class GradeBook {
                 }
             }
         }
-        System.out.println(activeClass.toString());
         return c_id;
     }
 
@@ -166,7 +162,6 @@ public class GradeBook {
 
     @Command
     public int classCreateOrId(String pName, String pTerm, int pYear, String pDescription) throws SQLException {
-        System.out.println("adding a new class");
         Boolean any = false;
         int c_id = -1;
         String queryCheck =
@@ -174,15 +169,20 @@ public class GradeBook {
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+                    System.out.println("Class already exists, selecting it");
                     any = true;
                     c_id = rs.getInt("c_id");
+                    activeClass.setC_id(c_id);
+                    activeClass.setName(rs.getString("name"));
+                    activeClass.setTerm(rs.getString("term"));
+                    activeClass.setYear(rs.getInt("year"));
+                    activeClass.setDescription(rs.getString("description"));
                 }
-                System.out.println("any matches? " + any );
             }
         }
 
         if(!any) {
-            System.out.println("in the add");
+            System.out.println("adding a new class");
             String query =
                     "insert into class (name, term, year, description) \n" +
                             "values ('" + pName + "', '" + pTerm + "', " + pYear + ", '" + pDescription + "')";
@@ -195,6 +195,11 @@ public class GradeBook {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         c_id = rs.getInt("c_id");
+                        activeClass.setC_id(c_id);
+                        activeClass.setName(rs.getString("name"));
+                        activeClass.setTerm(rs.getString("term"));
+                        activeClass.setYear(rs.getInt("year"));
+                        activeClass.setDescription(rs.getString("description"));
                     }
                 }
             }
@@ -211,23 +216,108 @@ public class GradeBook {
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+                    System.out.println("A section already exists");
                     alreadyASection = true;
                     sec_id  = rs.getInt("sec_id");
+                    activeSecId = sec_id;
+                    activeSecNum = rs.getInt("number");
                 }
-                System.out.println("any matches? " + alreadyASection );
+//                System.out.println("any matches? " + alreadyASection );
             }
         }
 
         if(!alreadyASection) {
-            System.out.println("adding a new section");
+            System.out.println("Adding a new section");
             String query =
                     "insert into section (number, c_id) values (" + number + ", " + c_id + ")";
-
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
+
+            try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        sec_id  = rs.getInt("sec_id");
+                        activeSecId = sec_id;
+                        activeSecNum = rs.getInt("number");
+                    }
+                }
+            }
+
         }
     }
+
+
+//END CLASS---------------------------------------------------------------------------------------------------------
+
+//START CATEGORIES---------------------------------------------------------------------------------------------------------
+    // select-class Thia Summer 1992 8
+    // show-categories
+    @Command
+    public void showCategories() throws SQLException {
+        String queryCheck;
+        String type;
+        double weight;
+            queryCheck =
+                    "select type, weight from type join section using(sec_id) where sec_id="+activeSecId+"";
+
+        System.out.println("TYPE\t\t\t|WEIGHT");
+        System.out.println("========================");
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    type = rs.getString("type");
+                    weight = rs.getDouble("weight");
+                    if(type.length() >= "extra credit".length()) {
+                        System.out.println(type + "\t|" + weight * 100 + "%");
+                    }else{
+                        System.out.println(type + "\t\t\t|" + weight * 100 + "%");
+                    }
+                }
+            }
+        }
+    }
+
+//  add-category a 1
+    @Command
+    public void addCategory(String type, double weight) throws SQLException {
+        Boolean alreadyACat = false;
+        int sec_id = -1;
+        String queryCheck =
+                "SELECT * from type where type='"+ type +"'";
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    System.out.println("This category already exists, updating weight");
+                    String updateQuery = "update type set weight="+weight+" from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
+                    alreadyACat = true;
+                    System.out.print(updateQuery);
+                    try (PreparedStatement s = db.prepareStatement(updateQuery)) {
+                        s.executeUpdate();
+                    }
+                }
+            }
+        }
+
+        if(!alreadyACat) {
+            System.out.println("Adding a new category");
+            String query =
+                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
+            try (PreparedStatement stmt = db.prepareStatement(query)) {
+                stmt.executeUpdate();
+            }
+
+            try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        sec_id  = rs.getInt("sec_id");
+                    }
+                }
+            }
+
+        }
+    }
+// END CATEGORIES---------------------------------------------------------------------------------------------------------
 
     @Command
     public void newStudent(String username, int stuId, String name) throws SQLException {
