@@ -651,13 +651,13 @@ public void studentGrades(String username) throws SQLException {
                     points = rs.getInt("points");
                     recieved = rs.getString("recieved");
 
-                    System.out.println(username + ", " + type + ", " + title + ", "+recieved+", " + points);
-//                    if(recieved.equals("null")){
-//                        System.out.println(username + ", " + type + ", " + title + ", NULL, " + points);
-//                    }else{
-//                        pRec = Integer.parseInt(recieved);
-//                        System.out.println(username + ", " + type + ", " + title + ", " + pRec + ", " + points);
-//                    }
+//                    System.out.println(username + ", " + type + ", " + title + ", "+recieved+", " + points);
+                    if(recieved == null){
+                        System.out.println(username + ", " + type + ", " + title + ", NULL, " + points);
+                    }else{
+                        pRec = Integer.parseInt(recieved);
+                        System.out.println(username + ", " + type + ", " + title + ", " + pRec + ", " + points);
+                    }
 
 
                 }
