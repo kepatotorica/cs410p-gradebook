@@ -346,7 +346,7 @@ public class GradeBook {
 //select type as category, title, rec_points, tot_points  from assignment join type USING(t_id) join section USING(sec_id) where sec_id='318'
 //order by(type)
     @Command
-    public void addItem(String type, String description, int ) throws SQLException {
+    public void addItem(String type, String description, int recieved) throws SQLException {
         Boolean alreadyACat = false;
         int sec_id = -1;
         String queryCheck =
