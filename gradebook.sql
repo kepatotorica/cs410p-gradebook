@@ -3,7 +3,7 @@ create table student (
 	stu_id serial PRIMARY KEY,
 	f_name VARCHAR(50),
 	l_name VARCHAR(50),
-	username VARCHAR(50)
+	username VARCHAR(50) UNIQUE
 );
 
 -- ALTER SEQUENCE class_c_id_seq RESTART WITH 1001

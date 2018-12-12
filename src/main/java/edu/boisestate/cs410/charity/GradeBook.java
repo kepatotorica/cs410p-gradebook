@@ -306,15 +306,6 @@ public class GradeBook {
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
-
-            try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        sec_id  = rs.getInt("sec_id");
-                    }
-                }
-            }
-
         }
     }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
