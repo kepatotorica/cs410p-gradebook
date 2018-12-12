@@ -253,6 +253,7 @@ public class GradeBook {
 
 //START CATEGORIES---------------------------------------------------------------------------------------------------------
     // select-class Thia Summer 1992 8
+    // add-item new project description 100
     // show-categories
     @Command
     public void showCategories() throws SQLException {
@@ -350,21 +351,22 @@ public class GradeBook {
         Boolean alreadyAnItem = false;
         int sec_id = -1;
         String queryCheck =
-                "select title, type, description, recieved from assignment"+
-                "join type USING(t_id)"+
-                "join section USING(sec_id)"+
-                "where sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"'"+
+                "select title, type, description, points from assignment "+
+                "join type USING(t_id) "+
+                "join section USING(sec_id) "+
+                "where sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"' "+
                 "order by(type)";
-
+//        System.out.println(queryCheck);
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
+                if (rs.next()) {
                     System.out.println("This item already exists, updating it instead");
                     String updateQuery =
-                            "update assignment"+
-                            "set description='"+description+"' points='"+points+"'"+
-                            "from section join type USING(sec_id)"+
-                            "where section.sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"'";
+                            "update assignment "+
+                            "set description='"+description+"', points="+points+" "+
+                            "from section join type USING(sec_id) "+
+                            "where section.sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"' ";
+//                    System.out.println(updateQuery);
                     alreadyAnItem = true;
                     System.out.print(updateQuery);
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
@@ -377,10 +379,10 @@ public class GradeBook {
         if(!alreadyAnItem) {
             System.out.println("Adding a new item");
             String query =
-                    "insert into assignment (description, title, points, t_id)"+
-                    "Select '"+description+"', '"+title+"', "+points+", t_id from type Join section using(sec_id)"+
+                    "insert into assignment (description, title, points, t_id) "+
+                    "Select '"+description+"', '"+title+"', "+points+", t_id from type Join section using(sec_id) "+
                     "where sec_id='"+activeSecId+"' and type='"+type+"' LIMIT 1";
-
+//                System.out.println(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
