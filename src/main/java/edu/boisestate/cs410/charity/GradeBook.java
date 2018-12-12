@@ -415,9 +415,9 @@ public class GradeBook {
                     System.out.println("This item already exists, updating it instead");
                     String updateQuery =
                             "update assignment " +
-                                    "set description='" + description + "', points=" + points + " " +
-                                    "from section join type USING(sec_id) " +
-                                    "where section.sec_id='" + activeSecId + "' and type='" + type + "' and title='" + title + "' ";
+                            "set description='" + description + "', points=" + points + " " +
+                            "from section join type USING(sec_id) " +
+                            "where section.sec_id='" + activeSecId + "' and type='" + type + "' and title='" + title + "' ";
                     alreadyAnItem = true;
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
                         s.executeUpdate();
@@ -514,30 +514,37 @@ public class GradeBook {
 
 //   stu: 839 a: 871
 //    username vfantinina
+//    grade new vfantinina 100
     @Command
     public void grade(String title, String username, int points) throws SQLException {
         Boolean alreadyAGrade = false;
         int sec_id = -1;
         String queryCheck =
-                "select title, type, description, recieved from assignment" +
-                        "join type USING(t_id)" +
-                        "join section USING(sec_id)" +
-                        "join grade USING(a_id)" +
-                        "where sec_id='" + activeSecId + "' and title='" + title + "'" +
-                        "order by(type)";
+                "select title, type, description, recieved from assignment " +
+                "join type USING(t_id) " +
+                "join section USING(sec_id) " +
+                "join grade USING(a_id) " +
+                "where sec_id='" + activeSecId + "' and title='" + title + "' " +
+                "order by(type) ";
 
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    System.out.println("This item already exists, updating it instead");
+                    System.out.println("This grade already exists, updating it instead");
                     String updateQuery =
-                            "update grade " +
-                            "set points=" + points + " " +
-                            "from section join type USING(sec_id) " +
-                            "where section.sec_id='" + activeSecId + "' and title='" + title + "' and username='" + username + "' ";
-                    System.out.println(updateQuery);
+                            "update grade set recieved="+points+" "+
+                            "where g_id in (select g_id from assignment "+
+                            "join type using(t_id) "+
+                            "join section using(sec_id) "+
+                            "join grade using(a_id) "+
+                            "join student using(stu_id) "+
+                            "where sec_id='"+activeSecId+"' and title='"+title+"' and username='"+username+"')";
+//                    System.out.println(updateQuery);
+//                            "update grade " +
+//                            "set points=" + points + " " +
+//                            "from section join type USING(sec_id) " +
+//                            "where section.sec_id='" + activeSecId + "' and title='" + title + "' and username='" + username + "' ";
                     alreadyAGrade = true;
-//                    System.out.print(updateQuery);
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
                         s.executeUpdate();
                     }
@@ -715,7 +722,10 @@ public class GradeBook {
 //    }
     @Command
     public void s() throws SQLException {
+        //    username vfantinina
         selectClass("Thia", "Summer", 1992, 8);
+        //    grade new vfantinina 100
+        grade("new","vfantinina",100);
     }
 
 }
