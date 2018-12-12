@@ -477,7 +477,7 @@ public class GradeBook {
             }
         }
         Boolean alreadyInSection = false;
-        if (!alreadyIsStudent) {
+        if (alreadyIsStudent) {
             String queryCheck2 = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = '"+stuId+"' AND sec_id = '"+activeSecId+"'";
             System.out.println(queryCheck2);
             try (PreparedStatement stmt = db.prepareStatement(queryCheck2)) {
