@@ -612,6 +612,10 @@ public void studentGrades(String username) throws SQLException {
     String type;
     String title;
     String recieved;
+    int subTotalPos = 0;
+    int subTotalRec = 0;
+    int totalPos =0;
+    int totalRec =0;
     int pRec;
     int points;
 
@@ -635,7 +639,7 @@ public void studentGrades(String username) throws SQLException {
     }
 
     if(stu_id != -1){//if we found a matching user
-        System.out.println("\nGrades for " + username + " in class " + activeClass.getName() + ":");
+        System.out.println("\nItem by item grades for " + username + " in class " + activeClass.getName() + ":");
         query =
                 "select username, type, title, recieved, points from assignment " +
                 "join type using(t_id) " +
@@ -651,28 +655,42 @@ public void studentGrades(String username) throws SQLException {
                 while (rs.next()) {
                     type = rs.getString("type");
                     if(!pType.equals(type)){
+                        if(subTotalPos != 0){
+                            System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0* subTotalRec)/subTotalPos + "%");
+                        }
+
                         System.out.println("\n" + type + ":");
                         System.out.printf("\t%-22s%-22s%-22s\n","Name","Recieved","Possible");
                         pType = type;
+                        totalPos += subTotalPos;
+                        totalRec += subTotalRec;
+                        subTotalPos = 0;
+                        subTotalRec = 0;
                     }
                     title = rs.getString("title");
                     points = rs.getInt("points");
+                    subTotalPos += points;
                     recieved = rs.getString("recieved");
 
 //                    System.out.println(username + ", " + type + ", " + title + ", "+recieved+", " + points);
                     if(recieved == null){
-//                        System.out.println(title + ", NULL, " + points);
                         System.out.printf("\t%-22s%-22s%-22s\n",title,"NULL",points);
                     }else{
                         pRec = Integer.parseInt(recieved);
-//                        System.out.println(title + ", " + pRec + ", " + points);
-                        System.out.printf("\t%-22s%-22s%-22s\n",title,"NULL",points);
+                        System.out.printf("\t%-22s%-22s%-22s\n",title,pRec,points);
+                        subTotalRec += pRec;
                     }
 
 
                 }
             }
         }
+
+        System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0*  subTotalRec)/subTotalPos + "%");
+        totalPos += subTotalPos;
+        totalRec += subTotalRec;
+
+        System.out.println("\nOverall grade: " + totalRec + "/" + totalPos + " = " + 100 * (1.0* totalRec)/totalPos + "%");
 //        gradeTotal("username");
     }else{
         System.out.println("No user " + username + " found in class " + activeClass.getName());
