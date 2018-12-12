@@ -57,6 +57,7 @@ import com.budhash.cliche.ShellFactory;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class GradeBook {
     private final Connection db;
@@ -605,6 +606,8 @@ public void studentGrades(String username) throws SQLException {
         return;
     }
 
+//    ArrayList<ArrayList<String>> types = new ArrayList<>();
+    String pType = "";
     String query;
     String type;
     String title;
@@ -625,13 +628,14 @@ public void studentGrades(String username) throws SQLException {
     try (PreparedStatement stmt = db.prepareStatement(query)) {
         try (ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                System.out.println("Found student in this class!");
+//                System.out.println("Found student in this class!");
                 stu_id = rs.getInt("stu_id");
             }
         }
     }
 
     if(stu_id != -1){//if we found a matching user
+        System.out.println("\nGrades for " + username + " in class " + activeClass.getName() + ":");
         query =
                 "select username, type, title, recieved, points from assignment " +
                 "join type using(t_id) " +
@@ -645,18 +649,24 @@ public void studentGrades(String username) throws SQLException {
         try (PreparedStatement stmt = db.prepareStatement(query)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-
                     type = rs.getString("type");
+                    if(!pType.equals(type)){
+                        System.out.println("\n" + type + ":");
+                        System.out.printf("\t%-22s%-22s%-22s\n","Name","Recieved","Possible");
+                        pType = type;
+                    }
                     title = rs.getString("title");
                     points = rs.getInt("points");
                     recieved = rs.getString("recieved");
 
 //                    System.out.println(username + ", " + type + ", " + title + ", "+recieved+", " + points);
                     if(recieved == null){
-                        System.out.println(username + ", " + type + ", " + title + ", NULL, " + points);
+//                        System.out.println(title + ", NULL, " + points);
+                        System.out.printf("\t%-22s%-22s%-22s\n",title,"NULL",points);
                     }else{
                         pRec = Integer.parseInt(recieved);
-                        System.out.println(username + ", " + type + ", " + title + ", " + pRec + ", " + points);
+//                        System.out.println(title + ", " + pRec + ", " + points);
+                        System.out.printf("\t%-22s%-22s%-22s\n",title,"NULL",points);
                     }
 
 
@@ -665,7 +675,7 @@ public void studentGrades(String username) throws SQLException {
         }
 //        gradeTotal("username");
     }else{
-        System.out.println("Check your input, no user was found for this class");
+        System.out.println("No user " + username + " found in class " + activeClass.getName());
     }
 }
 
