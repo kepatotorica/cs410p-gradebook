@@ -64,6 +64,7 @@ public class GradeBook {
     private static Class prevClass;
     private static int activeSecId;
     private static int activeSecNum;
+
     public GradeBook(Connection cxn) {
         db = cxn;
     }
@@ -90,7 +91,7 @@ public class GradeBook {
 //    select-class Nathaniel Fall 1995 86 & success
 
 
-//START CLASS---------------------------------------------------------------------------------------------------------
+    //START CLASS---------------------------------------------------------------------------------------------------------
     @Command
     public void selectClass(String pName) throws SQLException {
         selectClass(pName, "None", -1, -1);
@@ -105,24 +106,24 @@ public class GradeBook {
     public void selectClass(String pName, String pTerm, int pYear, int sNumber) throws SQLException {
         int numSec = 0;
         int c_id = findClass(pName, pTerm, pYear);
-        if(c_id == -1){
+        if (c_id == -1) {
             System.out.println("We didn't find a class");
             return; //aka we faild
         }
         numSec = selectSection(c_id, sNumber);
-            if (numSec != 1 && sNumber == -1) {
-                activeClass.copy(prevClass);
-                return; //didn't find a single section
-            }
+        if (numSec != 1 && sNumber == -1) {
+            activeClass.copy(prevClass);
+            return; //didn't find a single section
+        }
         prevClass.copy(activeClass);
         System.out.println(activeClass.toString() + " section: " + activeSecNum);
     }
 
     @Command
-    public void showClass(){
-        if(activeClass.getYear() != -1) {
+    public void showClass() {
+        if (activeClass.getYear() != -1) {
             System.out.println(activeClass.toString() + " section: " + activeSecNum);
-        }else{
+        } else {
             System.out.println("No active class");
         }
     }
@@ -134,21 +135,21 @@ public class GradeBook {
 
 
     @Command
-    public int selectSection(int c_id , int sNumber) throws SQLException {
+    public int selectSection(int c_id, int sNumber) throws SQLException {
         int sec_id = -1;
         int numSec = 0;
         String queryCheck;
-        if(sNumber == -1) {
+        if (sNumber == -1) {
             queryCheck =
                     "select * from section where c_id='" + c_id + "'";
-        }else{
+        } else {
             queryCheck =
                     "select * from section where c_id='" + c_id + "' and number='" + sNumber + "'";
         }
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    sec_id  = rs.getInt("sec_id");
+                    sec_id = rs.getInt("sec_id");
                     activeSecId = sec_id;
                     activeSecNum = rs.getInt("number");
                     numSec++;
@@ -172,27 +173,27 @@ public class GradeBook {
         int year = -1;
         String queryCheck;
 
-        if(pTerm.equals("None")) {
+        if (pTerm.equals("None")) {
             queryCheck =
                     " select * from class where name='" + pName + "' ORDER BY year DESC  LIMIT 3";
-        }else{
+        } else {
             queryCheck =
                     " select * from class where name='" + pName + "' and term='" + pTerm + "' and year='" + pYear + "' ORDER BY year DESC  LIMIT 3";
         }
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    if(c_id == -1){
+                    if (c_id == -1) {
                         year = rs.getInt("year");//first part of query returns oldest year
                     }
-                    if(rs.getString("term").toLowerCase().equals("spring")){
+                    if (rs.getString("term").toLowerCase().equals("spring")) {
                         currTerm = 0;
-                    }else if(rs.getString("term").toLowerCase().equals("summer")){
+                    } else if (rs.getString("term").toLowerCase().equals("summer")) {
                         currTerm = 1;
-                    }else if(rs.getString("term").toLowerCase().equals("fall")){
+                    } else if (rs.getString("term").toLowerCase().equals("fall")) {
                         currTerm = 2;
                     }
-                    if(maxTerm < currTerm && year <= rs.getInt("year")) { //if we find a new max
+                    if (maxTerm < currTerm && year <= rs.getInt("year")) { //if we find a new max
                         c_id = rs.getInt("c_id");
                         activeClass.setC_id(c_id);
                         activeClass.setName(rs.getString("name"));
@@ -234,7 +235,7 @@ public class GradeBook {
             }
         }
 
-        if(!any) {
+        if (!any) {
             System.out.println("adding a new class");
             String query =
                     "insert into class (name, term, year, description) \n" +
@@ -271,7 +272,7 @@ public class GradeBook {
                 while (rs.next()) {
                     System.out.println("A section already exists");
                     alreadyASection = true;
-                    sec_id  = rs.getInt("sec_id");
+                    sec_id = rs.getInt("sec_id");
                     activeSecId = sec_id;
                     activeSecNum = rs.getInt("number");
                 }
@@ -279,7 +280,7 @@ public class GradeBook {
             }
         }
 
-        if(!alreadyASection) {
+        if (!alreadyASection) {
             System.out.println("Adding a new section");
             String query =
                     "insert into section (number, c_id) values (" + number + ", " + c_id + ")";
@@ -290,7 +291,7 @@ public class GradeBook {
             try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        sec_id  = rs.getInt("sec_id");
+                        sec_id = rs.getInt("sec_id");
                         activeSecId = sec_id;
                         activeSecNum = rs.getInt("number");
                     }
@@ -303,21 +304,21 @@ public class GradeBook {
 
 //END CLASS---------------------------------------------------------------------------------------------------------
 
-//START CATEGORIES---------------------------------------------------------------------------------------------------------
+    //START CATEGORIES---------------------------------------------------------------------------------------------------------
     // select-class Thia Summer 1992 8
     // add-item new project description 100
     // show-categories
     @Command
     public void showCategories() throws SQLException {
-        if(activeClass.getYear() == -1) {
+        if (activeClass.getYear() == -1) {
             System.out.println("No active class");
             return;
         }
         String queryCheck;
         String type;
         double weight;
-            queryCheck =
-                    "select type, weight from type join section using(sec_id) where sec_id="+activeSecId+"";
+        queryCheck =
+                "select type, weight from type join section using(sec_id) where sec_id=" + activeSecId + "";
 
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
@@ -326,9 +327,9 @@ public class GradeBook {
                 while (rs.next()) {
                     type = rs.getString("type");
                     weight = rs.getDouble("weight");
-                    if(type.length() >= "extra credit".length()) {
+                    if (type.length() >= "extra credit".length()) {
                         System.out.println(type + "\t|" + weight * 100 + "%");
-                    }else{
+                    } else {
                         System.out.println(type + "\t\t\t|" + weight * 100 + "%");
                     }
                 }
@@ -336,18 +337,18 @@ public class GradeBook {
         }
     }
 
-//  add-category a 1
+    //  add-category a 1
     @Command
     public void addCategory(String type, double weight) throws SQLException {
         Boolean alreadyACat = false;
         int sec_id = -1;
         String queryCheck =
-                "SELECT * from type where type='"+ type +"'";
+                "SELECT * from type where type='" + type + "'";
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     System.out.println("This category already exists, updating weight");
-                    String updateQuery = "update type set weight="+weight+" from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
+                    String updateQuery = "update type set weight=" + weight + " from section where section.sec_id='" + activeSecId + "' and type='" + type + "';";
                     alreadyACat = true;
                     System.out.print(updateQuery);
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
@@ -357,10 +358,10 @@ public class GradeBook {
             }
         }
 
-        if(!alreadyACat) {
+        if (!alreadyACat) {
             System.out.println("Adding a new category");
             String query =
-                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
+                    "insert into type (type, weight, sec_id) values ('" + type + "', " + weight + ", " + activeSecId + ");";
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
@@ -369,7 +370,7 @@ public class GradeBook {
 
     @Command
     public void showItems() throws SQLException {
-        if(activeClass.getYear() == -1) {
+        if (activeClass.getYear() == -1) {
             System.out.println("No active class");
             return;
         }
@@ -379,7 +380,7 @@ public class GradeBook {
         int points;
 
         queryCheck =
-                "select type, title, points from assignment join type USING(t_id) join section USING(sec_id) where sec_id='"+activeSecId+"'" +
+                "select type, title, points from assignment join type USING(t_id) join section USING(sec_id) where sec_id='" + activeSecId + "'" +
                         "order by(type)";
 
 
@@ -403,20 +404,20 @@ public class GradeBook {
         Boolean alreadyAnItem = false;
         int sec_id = -1;
         String queryCheck =
-                "select title, type, description, points from assignment "+
-                "join type USING(t_id) "+
-                "join section USING(sec_id) "+
-                "where sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"' "+
-                "order by(type)";
+                "select title, type, description, points from assignment " +
+                        "join type USING(t_id) " +
+                        "join section USING(sec_id) " +
+                        "where sec_id='" + activeSecId + "' and type='" + type + "' and title='" + title + "' " +
+                        "order by(type)";
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     System.out.println("This item already exists, updating it instead");
                     String updateQuery =
-                            "update assignment "+
-                            "set description='"+description+"', points="+points+" "+
-                            "from section join type USING(sec_id) "+
-                            "where section.sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"' ";
+                            "update assignment " +
+                                    "set description='" + description + "', points=" + points + " " +
+                                    "from section join type USING(sec_id) " +
+                                    "where section.sec_id='" + activeSecId + "' and type='" + type + "' and title='" + title + "' ";
                     alreadyAnItem = true;
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
                         s.executeUpdate();
@@ -425,12 +426,13 @@ public class GradeBook {
             }
         }
 
-        if(!alreadyAnItem) {
+        if (!alreadyAnItem) {
             System.out.println("Adding a new item");
             String query =
-                    "insert into assignment (description, title, points, t_id) "+
-                    "Select '"+description+"', '"+title+"', "+points+", t_id from type Join section using(sec_id) "+
-                    "where sec_id='"+activeSecId+"' and type='"+type+"' LIMIT 1";
+                    "insert into assignment (description, title, points, t_id) " +
+                            "Select '" + description + "', '" + title + "', " + points + ", t_id from type Join section using(sec_id) " +
+                            "where sec_id='" + activeSecId + "' and type='" + type + "' LIMIT 1";
+            System.out.println(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
@@ -438,11 +440,12 @@ public class GradeBook {
     }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
 
-// START STUDENTS---------------------------------------------------------------------------------------------------------
+    // START STUDENTS---------------------------------------------------------------------------------------------------------
+//    select-class Thia Summer 1992 8
     @Command
     public void newStudent(String username, int stuId, String name) throws SQLException {
         Boolean alreadyIsStudent = false;
-        String queryCheck = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = 'stuId'";
+        String queryCheck = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = '"+stuId+"'";
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -451,11 +454,11 @@ public class GradeBook {
             }
         }
         Boolean alreadyInSection = false;
-        if (alreadyIsStudent){
-            String queryCheck2 = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = 'stuId' AND sec_id = 'activeSecId'";
-            try (PreparedStatement stmt = db.prepareStatement(queryCheck2)){
+        if (alreadyIsStudent) {
+            String queryCheck2 = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = '"+stuId+"' AND sec_id = '"+activeSecId+"'";
+            try (PreparedStatement stmt = db.prepareStatement(queryCheck2)) {
                 try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()){
+                    while (rs.next()) {
                         alreadyInSection = true;
                     }
                 }
@@ -468,9 +471,9 @@ public class GradeBook {
                 stmt.executeUpdate();
             }
         }
-        if (!alreadyInSection){
+        if (!alreadyInSection) {
             String insertQuery = "Insert into enrolled (stu_id,sec_id) values (stuId,activeSecId)";
-            try (PreparedStatement stmt = db.prepareStatement(insertQuery)){
+            try (PreparedStatement stmt = db.prepareStatement(insertQuery)) {
                 stmt.executeUpdate();
             }
         }
@@ -483,19 +486,19 @@ public class GradeBook {
 
     @Command
     public void showStudents(String search) throws SQLException {
-        if(activeClass.getYear() == -1) {
+        if (activeClass.getYear() == -1) {
             System.out.println("No active class");
             return;
         }
         String fName = "";
         String lName = "";
         String query;
-        if(search.equals("")){
+        if (search.equals("")) {
             query =
-                "SELECT * from student";
-        }else{
+                    "SELECT * from student join enrolled using(stu_id) join section using(sec_id) where sec_id='"+activeSecId+"'";
+        } else {
             query =
-                    "SELECT * from student WHERE f_name ILIKE ('%' ||'\" + search  + \"'|| '%') OR l_name ILIKE ('%' ||'\" + search  + \"'|| '%')username ILIKE ('%' ||'" + search  + "'|| '%') ORDER BY l_name";
+                    "SELECT * from student join enrolled using(stu_id) join section using(sec_id) WHERE (f_name ILIKE ('%' ||'\" + search  + \"'|| '%') OR l_name ILIKE ('%' ||'\" + search  + \"'|| '%')username ILIKE ('%' ||'" + search + "'|| '%')) and sec_id='"+activeSecId+"' ORDER BY l_name";
         }
         try (PreparedStatement stmt = db.prepareStatement(query)) {
             try (ResultSet rs = stmt.executeQuery()) {
@@ -507,30 +510,32 @@ public class GradeBook {
             }
         }
     }
-}
 
+
+//   stu: 839 a: 871
+//    username vfantinina
     @Command
     public void grade(String title, String username, int points) throws SQLException {
         Boolean alreadyAGrade = false;
         int sec_id = -1;
         String queryCheck =
-                "select title, type, description, recieved from assignment"+
-                "join type USING(t_id)"+
-                "join section USING(sec_id)"+
-                "join grade USING(a_id)"+
-                "where sec_id='"+activeSecId+"' and title='"+title+"'"+
-                "order by(type)";
+                "select title, type, description, recieved from assignment" +
+                        "join type USING(t_id)" +
+                        "join section USING(sec_id)" +
+                        "join grade USING(a_id)" +
+                        "where sec_id='" + activeSecId + "' and title='" + title + "'" +
+                        "order by(type)";
 
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     System.out.println("This item already exists, updating it instead");
-                    String updateQuery = "";
-//                            "update assignment "+
-//                            "set description='"+description+"', points="+points+" "+
-//                            "from section join type USING(sec_id) "+
-//                            "where section.sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"' ";
-//                    System.out.println(updateQuery);
+                    String updateQuery =
+                            "update grade " +
+                            "set points=" + points + " " +
+                            "from section join type USING(sec_id) " +
+                            "where section.sec_id='" + activeSecId + "' and title='" + title + "' and username='" + username + "' ";
+                    System.out.println(updateQuery);
                     alreadyAGrade = true;
 //                    System.out.print(updateQuery);
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
@@ -540,14 +545,19 @@ public class GradeBook {
             }
         }
 
-        if(!alreadyAGrade) {
+        if (!alreadyAGrade) {
             System.out.println("Adding a new item");
             String query =
-                    "";
-//                    "insert into assignment (description, title, points, t_id) "+
-//                    "Select '"+description+"', '"+title+"', "+points+", t_id from type Join section using(sec_id) "+
-//                    "where sec_id='"+activeSecId+"' and type='"+type+"' LIMIT 1";
-                    System.out.print("");
+                "insert into grade (stu_id, a_id, recieved) "+
+                "Select stu_id, a_id, "+points+" from assignment "+
+                "join type using(t_id) "+
+                "join section using(sec_id) "+
+                "join enrolled using(sec_id) "+
+                "join student using(stu_id) "+
+                "where sec_id='"+activeSecId+"' and title='"+title+"' and username='"+username+"' "+
+                "LIMIT 1 ";
+
+            System.out.print("");
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
@@ -703,3 +713,9 @@ public class GradeBook {
 //            }
 //        }
 //    }
+    @Command
+    public void s() throws SQLException {
+        selectClass("Thia", "Summer", 1992, 8);
+    }
+
+}
