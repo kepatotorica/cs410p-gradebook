@@ -326,6 +326,8 @@ public class GradeBook {
         int tot_points;
         int rec_points;
 
+//        select type as category, title, points  from assignment join type USING(t_id) join section USING(sec_id) where sec_id='318'
+//order by(type)
         queryCheck =
                 "select type as category, title, points from assignment join type USING(t_id) join section USING(sec_id) where sec_id='"+activeSecId+"'" +
                         "order by(type)";

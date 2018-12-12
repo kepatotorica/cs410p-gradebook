@@ -33,7 +33,7 @@ create table enrolled (
 create table type (
 	t_id serial PRIMARY KEY,
 	type VARCHAR(12) NOT NULL,
-	weight DECIMAL(2,1) NOT NULL,
+	weight DECIMAL(4,3) NOT NULL,
 	sec_id INTEGER NOT NULL REFERENCES section
 );
 
@@ -52,7 +52,7 @@ create table grade (
 	g_id serial PRIMARY KEY,
 	s_id INTEGER NOT NULL REFERENCES student,
 	a_id INTEGER NOT NULL REFERENCES assignment,
-	recieved DECIMAL(2,1) NOT NULL
+	recieved DECIMAL(4,3) NOT NULL
 );
 
 insert into student (stu_id, f_name, l_name, username) values (1, 'Justina', 'Bissett', 'jbissett0');
