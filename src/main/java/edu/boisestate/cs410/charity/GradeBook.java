@@ -1,3 +1,55 @@
+//-- select-class Thia Summer 1992 8
+//-- add-item new project description 100
+//
+//
+//--   select title, type, description, points, t_id from assignment
+//--  join type USING(t_id)
+//--  join section USING(sec_id)
+//--  where sec_id='318' and type='project'
+//--  order by(type);
+//
+//-- update item set recieved=38 from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
+//-- Select * from section join type USING(sec_id)
+//-- where section.sec_id='318' and type='test' and title='Senior Developer'
+//
+//-- update assignment
+//-- set description='new!!', points=100
+//-- from section join type USING(sec_id)
+//-- where section.sec_id='318' and type='test' and title='Senior Developer';
+//
+//--  select title, type, description, points, t_id from assignment
+//--  join type USING(t_id)
+//--  join section USING(sec_id)
+//--  where sec_id='318' and type='test' and title='Senior Developer'
+//--  order by(type);
+//
+//
+//--  select title, type, description, points, t_id from assignment
+//--  join type USING(t_id)
+//--  join section USING(sec_id)
+//--  where sec_id='318' and type='test'
+//--  order by(type);
+//
+//--  Select t_id from type Join section using(sec_id) where sec_id='318' and type='test' LIMIT 1;
+//-- Select t_id from type Join section using(sec_id) where sec_id='318' and type='test' LIMIT 1
+//--  insert into assignment (description, title, points, t_id)
+//--  values ('desc', 'title', 49, 267);
+//
+//--  insert into assignment (description, title, points, t_id)
+//--  Select 'desc', 'title', 48, t_id from type Join section using(sec_id)
+//--  where sec_id='318' and type='test' LIMIT 1;
+//
+//-- select-class Thia Summer 1992 8
+//-- add-item new project description 100
+//
+//
+// select title, type, description, points, t_id from assignment
+// join type USING(t_id)
+// join section USING(sec_id)
+// where sec_id='318' and type='project'
+// order by(type);
+
+
 package edu.boisestate.cs410.charity;
 
 import com.budhash.cliche.Command;
