@@ -68,7 +68,7 @@ public class GradeBook {
 
     @Command
     public void showClass(){
-        if(activeClass.getYear() == -1) {
+        if(activeClass.getYear() != -1) {
             System.out.println(activeClass.toString() + " section: " + activeSecNum);
         }else{
             System.out.println("No active class");
