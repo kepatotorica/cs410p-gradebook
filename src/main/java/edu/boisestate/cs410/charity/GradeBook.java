@@ -611,7 +611,7 @@ public class GradeBook {
 // student-grades kepa1
 // student-grades vfantinina
 @Command
-public void studentGrades(String username) throws SQLException {
+public void studentGrades(String username1) throws SQLException {
     if (activeClass.getYear() == -1) {
         System.out.println("No active class");
         return;
@@ -619,28 +619,35 @@ public void studentGrades(String username) throws SQLException {
 
 //    ArrayList<ArrayList<String>> types = new ArrayList<>();
     String pType = "";
-    String query;
-    String type;
-    String title;
-    String recieved;
+    String query = "";
+    String type = "";
+    String title = "";
+    String recieved = "";
+    String f_name = "";
+    String l_name = "";
+    String username = username1;
     int subTotalPos = 0;
     int subTotalRec = 0;
     int totalPos =0;
     int totalRec =0;
-    int pRec;
-    int points;
+    int pRec = 0;
+    int points = 0;
+
+
 
     int stu_id = -1;
 
-    if(username == "-1"){
+    if(username1 == "-1"){
+        System.out.printf("\n\n\t%-22s%-22s%-22s%-22s%-22s%-22s\n", "username", "student id", "first name", "last name", "Point Ratio", "Percentage");
+        System.out.println("\t===============================================================================================================================");
         query =
-                "select stu_id from student " +
+                "select stu_id, f_name, l_name, username from student " +
                         "join enrolled using(stu_id) " +
                         "join section using(sec_id) " +
                         "where sec_id='" + activeSecId + "'";
     }else {
         query =
-                "select stu_id from student " +
+                "select stu_id, f_name, l_name, username from student " +
                         "join enrolled using(stu_id) " +
                         "join section using(sec_id) " +
                         "where username='" + username + "' and sec_id='" + activeSecId + "'";
@@ -653,80 +660,100 @@ public void studentGrades(String username) throws SQLException {
             while (rs.next()) {
 //                System.out.println("Found student in this class!");
                 stu_id = rs.getInt("stu_id");
-            }
-        }
-    }
+                f_name = rs.getString("f_name");
+                l_name = rs.getString("l_name");
+                username = rs.getString("username");
+                subTotalPos = 0;
+                subTotalRec = 0;
+                totalPos =0;
+                totalRec =0;
+                pRec = 0;
+                points = 0;
 
-    if(stu_id != -1){//if we found a matching user
-        System.out.println("\nItem by item grades for " + username + " in class " + activeClass.getName() + ":");
-        query =
-                "select username, type, title, recieved, points from assignment " +
-                "join type using(t_id) " +
-                "join enrolled using(sec_id) " +
-                "join student using(stu_id) " +
-                "left join grade using(a_id) " +
-                "where username='"+username+"' and grade.stu_id=student.stu_id and sec_id="+activeSecId+" " +
-                "Order by type";
+                if(stu_id != -1){//if we found a matching user
+                    if(username1 != "-1") {
+                        System.out.println("\n\nItem by item grades for " + username + " in class " + activeClass.getName() + ":");
+                    }
+                    query =
+                            "select username, type, title, recieved, points from assignment " +
+                                    "join type using(t_id) " +
+                                    "join enrolled using(sec_id) " +
+                                    "join student using(stu_id) " +
+                                    "left join grade using(a_id) " +
+                                    "where username='"+username+"' and grade.stu_id=student.stu_id and sec_id="+activeSecId+" " +
+                                    "Order by type";
 
-                System.out.println(query);
-        try (PreparedStatement stmt = db.prepareStatement(query)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    type = rs.getString("type");
-                    if(!pType.equals(type)){
-                        if(subTotalPos != 0){
-                            System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0* subTotalRec)/subTotalPos + "%");
+//                System.out.println(query);
+                    try (PreparedStatement stmt1 = db.prepareStatement(query)) {
+                        try (ResultSet rs1 = stmt1.executeQuery()) {
+                            while (rs1.next()) {
+                                type = rs1.getString("type");
+                                if(!pType.equals(type)){
+                                    if(subTotalPos != 0){
+                                        if(username1 != "-1") {
+                                            System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0 * subTotalRec) / subTotalPos + "%");
+                                        }
+                                    }
+
+                                    if(username1 != "-1") {
+                                        System.out.println("\n" + type + ":");
+                                        System.out.printf("\t%-22s%-22s%-22s\n", "Name", "Recieved", "Possible");
+                                    }
+                                    pType = type;
+                                    totalPos += subTotalPos;
+                                    totalRec += subTotalRec;
+                                    subTotalPos = 0;
+                                    subTotalRec = 0;
+                                }
+                                title = rs1.getString("title");
+                                points = rs1.getInt("points");
+                                subTotalPos += points;
+                                recieved = rs1.getString("recieved");
+
+                                if(recieved == null){
+                                    if(username1 != "-1") {
+                                        System.out.printf("\t%-22s%-22s%-22s\n", title, "NULL", points);
+                                    }
+                                }else{
+                                    pRec = Integer.parseInt(recieved);
+                                    if(username1 != "-1") {
+                                        System.out.printf("\t%-22s%-22s%-22s\n", title, pRec, points);
+                                    }
+                                    subTotalRec += pRec;
+                                }
+
+
+                            }
                         }
-
-                        System.out.println("\n" + type + ":");
-                        System.out.printf("\t%-22s%-22s%-22s\n","Name","Recieved","Possible");
-                        pType = type;
-                        totalPos += subTotalPos;
-                        totalRec += subTotalRec;
-                        subTotalPos = 0;
-                        subTotalRec = 0;
-                    }
-                    title = rs.getString("title");
-                    points = rs.getInt("points");
-                    subTotalPos += points;
-                    recieved = rs.getString("recieved");
-
-//                    System.out.println(username + ", " + type + ", " + title + ", "+recieved+", " + points);
-                    if(recieved == null){
-                        System.out.printf("\t%-22s%-22s%-22s\n",title,"NULL",points);
-                    }else{
-                        pRec = Integer.parseInt(recieved);
-                        System.out.printf("\t%-22s%-22s%-22s\n",title,pRec,points);
-                        subTotalRec += pRec;
                     }
 
+                    if(username1 != "-1") {
+                        System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0 * subTotalRec) / subTotalPos + "%\n");
+                    }
+                    totalPos += subTotalPos;
+                    totalRec += subTotalRec;
 
+                    System.out.printf("\t%-22s%-22s%-22s%-22s%-22s%-22s\n", username, stu_id, f_name, l_name, totalRec +"/"+ totalPos + " =", 100 * (1.0* totalRec)/totalPos + "%");
+                }else{
+                    System.out.println("No user " + username + " found in class " + activeClass.getName());
                 }
             }
         }
-
-        System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0*  subTotalRec)/subTotalPos + "%");
-        totalPos += subTotalPos;
-        totalRec += subTotalRec;
-
-        System.out.println("\nOverall grade: " + totalRec + "/" + totalPos + " = " + 100 * (1.0* totalRec)/totalPos + "%");
-//        gradeTotal("username");
-    }else{
-        System.out.println("No user " + username + " found in class " + activeClass.getName());
     }
 }
 
     @Command
-    public void gradebook(){
-        if (activeClass.getYear() == -1) {
-            System.out.println("No active class");
-            return;
-        }
-
-
-        String query;
-        query =
-                "SELECT * from student join enrolled using(stu_id) join section using(sec_id) where sec_id='"+activeSecId+"'";
+    public void gradebook() throws SQLException {
+        studentGrades("-1");
+//        if (activeClass.getYear() == -1) {
+//            System.out.println("No active class");
+//            return;
+//        }
+//
+//
+//        String query;
+//        query =
+//                "SELECT * from student join enrolled using(stu_id) join section using(sec_id) where sec_id='"+activeSecId+"'";
 
     }
 
@@ -754,6 +781,7 @@ public void studentGrades(String username) throws SQLException {
         // student-grades vfantinina
         grade("new", "kepa1", (int) (Math.random() * 200));
         studentGrades("kepa1");
+        gradebook();
     }
 
 }
