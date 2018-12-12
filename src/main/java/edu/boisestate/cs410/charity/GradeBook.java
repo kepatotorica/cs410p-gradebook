@@ -58,6 +58,7 @@ import com.budhash.cliche.ShellFactory;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GradeBook {
     private final Connection db;
@@ -632,6 +633,8 @@ public void studentGrades(String username1) throws SQLException {
     int totalRec =0;
     int pRec = 0;
     int points = 0;
+    List<Double> weights;
+    List<Double> totals;
 
 
 
@@ -667,27 +670,30 @@ public void studentGrades(String username1) throws SQLException {
                 subTotalRec = 0;
                 totalPos =0;
                 totalRec =0;
+                pType="";
                 pRec = 0;
                 points = 0;
+                weights = new ArrayList<>();
+                totals = new ArrayList<>();
 
                 if(stu_id != -1){//if we found a matching user
                     if(username1 != "-1") {
                         System.out.println("\n\nItem by item grades for " + username + " in class " + activeClass.getName() + ":");
                     }
                     query =
-                            "select username, type, title, recieved, points from assignment " +
+                            "select username, type, title, recieved, points, weight from assignment " +
                                     "join type using(t_id) " +
                                     "join enrolled using(sec_id) " +
                                     "join student using(stu_id) " +
                                     "left join grade using(a_id) " +
                                     "where username='"+username+"' and grade.stu_id=student.stu_id and sec_id="+activeSecId+" " +
                                     "Order by type";
-
-//                System.out.println(query);
+                    
                     try (PreparedStatement stmt1 = db.prepareStatement(query)) {
                         try (ResultSet rs1 = stmt1.executeQuery()) {
                             while (rs1.next()) {
                                 type = rs1.getString("type");
+                                weights.add(rs1.getDouble("weight"));
                                 if(!pType.equals(type)){
                                     if(subTotalPos != 0){
                                         if(username1 != "-1") {
