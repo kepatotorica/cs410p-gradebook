@@ -377,7 +377,10 @@ public class GradeBook {
         if(!alreadyAnItem) {
             System.out.println("Adding a new item");
             String query =
-                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
+                    "insert into assignment (description, title, points, t_id)"+
+                    "Select '"+description+"', '"+title+"', "+points+", t_id from type Join section using(sec_id)"+
+                    "where sec_id='"+activeSecId+"' and type='"+type+"' LIMIT 1";
+
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
