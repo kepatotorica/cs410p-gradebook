@@ -364,7 +364,7 @@ public class GradeBook {
                                     " where section.sec_id='" + activeSecId + "' " +
                                     "and type='" + type + "';";
                     alreadyACat = true;
-                    System.out.print(updateQuery);
+//                    System.out.print(updateQuery);
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
                         s.executeUpdate();
                     }
@@ -468,7 +468,7 @@ public class GradeBook {
     public void addStudent(String username, int stuId, String name) throws SQLException {
         Boolean alreadyIsStudent = false;
         String queryCheck = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = '"+stuId+"'";
-        System.out.println(queryCheck);
+//        System.out.println(queryCheck);
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -479,7 +479,7 @@ public class GradeBook {
         Boolean alreadyInSection = false;
         if (alreadyIsStudent) {
             String queryCheck2 = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = '"+stuId+"' AND sec_id = '"+activeSecId+"'";
-            System.out.println(queryCheck2);
+//            System.out.println(queryCheck2);
             try (PreparedStatement stmt = db.prepareStatement(queryCheck2)) {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
@@ -491,14 +491,14 @@ public class GradeBook {
             String[] fullName;
             fullName = name.split(", ");
             String query = "insert into student (stu_id, f_name, l_name, username) values ('" + stuId + "', '" + fullName[0] + "', '" + fullName[1] + "','" + username + "')";
-            System.out.println(query);
+//            System.out.println(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
         }
         if (!alreadyInSection) {
             String insertQuery = "Insert into enrolled (stu_id,sec_id) values ("+stuId+","+activeSecId+")";
-            System.out.println(insertQuery);
+//            System.out.println(insertQuery);
             try (PreparedStatement stmt = db.prepareStatement(insertQuery)) {
                 stmt.executeUpdate();
             }
@@ -535,7 +535,7 @@ public class GradeBook {
                     lName = rs.getString("l_name");
                     uName = rs.getString("username");
                     stuId = rs.getInt("stu_id");
-                    System.out.printf("%d, %s (%s, %s)%n", stuId, uName, lName, fName);
+//                    System.out.printf("%d, %s (%s, %s)%n", stuId, uName, lName, fName);
                 }
             }
         }
@@ -554,9 +554,10 @@ public class GradeBook {
                 "join type USING(t_id) " +
                 "join section USING(sec_id) " +
                 "join grade USING(a_id) " +
-                "where sec_id='" + activeSecId + "' and title='" + title + "' " +
+                "join student Using(stu_id) "+
+                "where sec_id='" + activeSecId + "' and title='" + title + "' and username='"+username+"'" +
                 "order by(type) ";
-
+//            System.out.println(queryCheck);
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -569,6 +570,7 @@ public class GradeBook {
                             "join grade using(a_id) "+
                             "join student using(stu_id) "+
                             "where sec_id='"+activeSecId+"' and title='"+title+"' and username='"+username+"')";
+//                    System.out.println(updateQuery);
 //                    System.out.println(updateQuery);
 //                            "update grade " +
 //                            "set points=" + points + " " +
@@ -594,7 +596,7 @@ public class GradeBook {
                 "where sec_id='"+activeSecId+"' and title='"+title+"' and username='"+username+"' "+
                 "LIMIT 1 ";
 
-            System.out.print(query);
+//            System.out.print(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
@@ -604,6 +606,10 @@ public class GradeBook {
 // END STUDENTS---------------------------------------------------------------------------------------------------------
 
 // START REPORT---------------------------------------------------------------------------------------------------------
+// student-grades dflecknellix
+// student-grades kepa
+// student-grades kepa1
+// student-grades vfantinina
 @Command
 public void studentGrades(String username) throws SQLException {
     if (activeClass.getYear() == -1) {
@@ -659,10 +665,10 @@ public void studentGrades(String username) throws SQLException {
                 "join enrolled using(sec_id) " +
                 "join student using(stu_id) " +
                 "left join grade using(a_id) " +
-                "where username='"+username+"' and sec_id="+activeSecId+" " +
+                "where username='"+username+"' and grade.stu_id=student.stu_id and sec_id="+activeSecId+" " +
                 "Order by type";
 
-//                System.out.println(query);
+                System.out.println(query);
         try (PreparedStatement stmt = db.prepareStatement(query)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -725,7 +731,12 @@ public void studentGrades(String username) throws SQLException {
     }
 
     @Command
-    public void gradeTotal(String username){
+    public void gradeTotal() throws SQLException {
+            studentGrades("-1");
+    }
+
+    @Command
+    public void addGrades(String stu_id){
 
     }
 
@@ -735,11 +746,14 @@ public void studentGrades(String username) throws SQLException {
         //    username vfantinina
         selectClass("Thia", "Summer", 1992, 8);
         addItem("should","test", "desc",200);
-        //    grade new vfantinina 100
-//        grade("new","vfantinina",100);
+        //    grade new kepa1 100
+//        grade("new","vfantinina",100)
+
         showStudents();
-        //vfantinina
-        studentGrades("vfantinina");
+        // student-grades kepa1
+        // student-grades vfantinina
+        grade("new", "kepa1", (int) (Math.random() * 200));
+        studentGrades("kepa1");
     }
 
 }
