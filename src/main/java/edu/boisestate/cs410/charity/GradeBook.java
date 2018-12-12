@@ -310,6 +310,78 @@ public class GradeBook {
     }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
 
+    @Command
+    public void newStudent(String username, int stuId, String name) throws SQLException {
+        Boolean alreadyIsStudent = false;
+        String queryCheck = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = 'stuId'";
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    alreadyIsStudent = true;
+                }
+            }
+        }
+        Boolean alreadyInSection = false;
+        if (alreadyIsStudent){
+            String queryCheck2 = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = 'stuId' AND sec_id = 'activeSecId'";
+            try (PreparedStatement stmt = db.prepareStatement(queryCheck2)){
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()){
+                        alreadyInSection = true;
+                    }
+                }
+            }
+        } else {
+            String[] fullName;
+            fullName = name.split(", ");
+            String query = "insert into student (stu_id, f_name, l_name, username) values ('" + stuId + "', '" + fullName[0] + "', '" + fullName[1] + "','" + username + "')";
+            try (PreparedStatement stmt = db.prepareStatement(query)) {
+                stmt.executeUpdate();
+            }
+        }
+        if (!alreadyInSection){
+            String insertQuery = "Insert into enrolled (stu_id,sec_id) values (stuId,activeSecId)";
+            try (PreparedStatement stmt = db.prepareStatement(insertQuery)){
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    @Command
+    public void showStudents() throws SQLException {
+        String fName = "";
+        String lName = "";
+        String queryCheck =
+                "SELECT * from student";
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    fName = rs.getString("f_name");
+                    lName = rs.getString("l_name");
+                    System.out.printf("%s, %s%n", lName, fName);
+                }
+            }
+        }
+    }
+
+    @Command
+    public void showStudents(String search) throws SQLException {
+        String fName = "";
+        String lName = "";
+        String query =
+                "SELECT * from student WHERE f_name ILIKE ('%' ||'\" + search  + \"'|| '%') OR l_name ILIKE ('%' ||'\" + search  + \"'|| '%')username ILIKE ('%' ||'" + search  + "'|| '%') ORDER BY l_name";
+        try (PreparedStatement stmt = db.prepareStatement(query)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    fName = rs.getString("f_name");
+                    lName = rs.getString("l_name");
+                    System.out.printf("%s, %s%n", lName, fName);
+                }
+            }
+        }
+    }
+}
+//SELECT * from student WHERE f_name LIKE searchQ OR l_name LIKE 'searchQ' OR username LIKE 'searchQ' ORDER BY l_name"
 //    @Command
 //    public void findDonor(String donorName) throws SQLException {
 //        System.out.println("searching for author matching " + donorName);
@@ -449,4 +521,3 @@ public class GradeBook {
 //            }
 //        }
 //    }
-}
