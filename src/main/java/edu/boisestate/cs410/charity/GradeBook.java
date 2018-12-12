@@ -345,35 +345,41 @@ public class GradeBook {
     }
 //select type as category, title, rec_points, tot_points  from assignment join type USING(t_id) join section USING(sec_id) where sec_id='318'
 //order by(type)
-    @Command
-    public void addItem(String type, String description, int recieved) throws SQLException {
-        Boolean alreadyACat = false;
-        int sec_id = -1;
-        String queryCheck =
-                "SELECT * from type where type='"+ type +"'";
-        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    System.out.println("This item already exists, updating weight");
-                    String updateQuery = "update type set weight="+weight+" from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
-                    alreadyACat = true;
-                    System.out.print(updateQuery);
-                    try (PreparedStatement s = db.prepareStatement(updateQuery)) {
-                        s.executeUpdate();
-                    }
-                }
-            }
-        }
-
-        if(!alreadyACat) {
-            System.out.println("Adding a new item");
-            String query =
-                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
-            try (PreparedStatement stmt = db.prepareStatement(query)) {
-                stmt.executeUpdate();
-            }
-        }
-    }
+//    @Command
+//    public void addItem(String title, String type, String description, int recieved) throws SQLException {
+//        Boolean alreadyAGrade = false;
+//        int sec_id = -1;
+//        String queryCheck =
+//                "select title, type, description, recieved from assignment"+
+//                "join type USING(t_id)"+
+//                "join section USING(sec_id)"+
+//                "join grade USING(a_id)"+
+//                "where sec_id='"+activeSecId+"' and title='"+title+"'"+
+//                "order by(type)";
+//
+//        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+//            try (ResultSet rs = stmt.executeQuery()) {
+//                while (rs.next()) {
+//                    System.out.println("This item already exists, updating weight");
+//                    String updateQuery = "update type set weight="+weight+" from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
+//                    alreadyAGrade = true;
+//                    System.out.print(updateQuery);
+//                    try (PreparedStatement s = db.prepareStatement(updateQuery)) {
+//                        s.executeUpdate();
+//                    }
+//                }
+//            }
+//        }
+//
+//        if(!alreadyACat) {
+//            System.out.println("Adding a new item");
+//            String query =
+//                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
+//            try (PreparedStatement stmt = db.prepareStatement(query)) {
+//                stmt.executeUpdate();
+//            }
+//        }
+//    }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
 
 // START STUDENTS---------------------------------------------------------------------------------------------------------
@@ -446,6 +452,14 @@ public class GradeBook {
         }
     }
 }
+//for seeing if there is already a grade
+// String queryCheck =
+//                "select title, type, description, recieved from assignment"+
+//                "join type USING(t_id)"+
+//                "join section USING(sec_id)"+
+//                "join grade USING(a_id)"+
+//                "where sec_id='"+activeSecId+"' and title='"+title+"'"+
+//                "order by(type)";
 // END STUDENTS---------------------------------------------------------------------------------------------------------
 
 //SELECT * from student WHERE f_name LIKE searchQ OR l_name LIKE 'searchQ' OR username LIKE 'searchQ' ORDER BY l_name"
