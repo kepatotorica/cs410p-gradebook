@@ -343,43 +343,46 @@ public class GradeBook {
             }
         }
     }
-//select type as category, title, rec_points, tot_points  from assignment join type USING(t_id) join section USING(sec_id) where sec_id='318'
-//order by(type)
-//    @Command
-//    public void addItem(String title, String type, String description, int recieved) throws SQLException {
-//        Boolean alreadyAGrade = false;
-//        int sec_id = -1;
-//        String queryCheck =
-//                "select title, type, description, recieved from assignment"+
-//                "join type USING(t_id)"+
-//                "join section USING(sec_id)"+
-//                "join grade USING(a_id)"+
-//                "where sec_id='"+activeSecId+"' and title='"+title+"'"+
-//                "order by(type)";
-//
-//        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
-//            try (ResultSet rs = stmt.executeQuery()) {
-//                while (rs.next()) {
-//                    System.out.println("This item already exists, updating weight");
-//                    String updateQuery = "update type set weight="+weight+" from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
-//                    alreadyAGrade = true;
-//                    System.out.print(updateQuery);
-//                    try (PreparedStatement s = db.prepareStatement(updateQuery)) {
-//                        s.executeUpdate();
-//                    }
-//                }
-//            }
-//        }
-//
-//        if(!alreadyACat) {
-//            System.out.println("Adding a new item");
-//            String query =
-//                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
-//            try (PreparedStatement stmt = db.prepareStatement(query)) {
-//                stmt.executeUpdate();
-//            }
-//        }
-//    }
+
+    //The instructions are not clear on what each of these arguments is to be
+    @Command
+    public void addItem(String title, String type, String description, int points) throws SQLException {
+        Boolean alreadyAnItem = false;
+        int sec_id = -1;
+        String queryCheck =
+                "select title, type, description, recieved from assignment"+
+                "join type USING(t_id)"+
+                "join section USING(sec_id)"+
+                "where sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"'"+
+                "order by(type)";
+
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    System.out.println("This item already exists, updating it instead");
+                    String updateQuery =
+                            "update assignment"+
+                            "set description='"+description+"' points='"+points+"'"+
+                            "from section join type USING(sec_id)"+
+                            "where section.sec_id='"+activeSecId+"' and type='"+type+"' and title='"+title+"'";
+                    alreadyAnItem = true;
+                    System.out.print(updateQuery);
+                    try (PreparedStatement s = db.prepareStatement(updateQuery)) {
+                        s.executeUpdate();
+                    }
+                }
+            }
+        }
+
+        if(!alreadyAnItem) {
+            System.out.println("Adding a new item");
+            String query =
+                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
+            try (PreparedStatement stmt = db.prepareStatement(query)) {
+                stmt.executeUpdate();
+            }
+        }
+    }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
 
 // START STUDENTS---------------------------------------------------------------------------------------------------------
