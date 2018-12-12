@@ -68,7 +68,7 @@ public class GradeBook {
 
     @Command
     public void showClass(){
-        if(activeClass.getYear() != -1) {
+        if(activeClass.getYear() == -1) {
             System.out.println(activeClass.toString() + " section: " + activeSecNum);
         }else{
             System.out.println("No active class");
@@ -256,7 +256,7 @@ public class GradeBook {
     // show-categories
     @Command
     public void showCategories() throws SQLException {
-        if(activeClass.getYear() != -1) {
+        if(activeClass.getYear() == -1) {
             System.out.println("No active class");
             return;
         }
@@ -266,10 +266,10 @@ public class GradeBook {
             queryCheck =
                     "select type, weight from type join section using(sec_id) where sec_id="+activeSecId+"";
 
-        System.out.println("TYPE\t\t\t|WEIGHT");
-        System.out.println("========================");
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
+                System.out.println("TYPE\t\t\t|WEIGHT");
+                System.out.println("========================");
                 while (rs.next()) {
                     type = rs.getString("type");
                     weight = rs.getDouble("weight");
@@ -316,30 +316,31 @@ public class GradeBook {
 
     @Command
     public void showItems() throws SQLException {
-        if(activeClass.getYear() != -1) {
+        if(activeClass.getYear() == -1) {
             System.out.println("No active class");
             return;
         }
         String queryCheck;
         String type;
-        String weight;
-        int tot_points;
-        int rec_points;
+        String title;
+        int points;
 
 //        select type as category, title, points  from assignment join type USING(t_id) join section USING(sec_id) where sec_id='318'
 //order by(type)
         queryCheck =
-                "select type as category, title, points from assignment join type USING(t_id) join section USING(sec_id) where sec_id='"+activeSecId+"'" +
+                "select type, title, points from assignment join type USING(t_id) join section USING(sec_id) where sec_id='"+activeSecId+"'" +
                         "order by(type)";
 
-        System.out.println("TYPE\t\t\t|WEIGHT");
-        System.out.println("========================");
+
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
+                System.out.println("\tcategory\t|\ttitle\t|\tpoints");
+                System.out.println("================================================");
                 while (rs.next()) {
-//                    type = rs.getString("type");
-//                    weight = rs.getDouble("weight");
-//                        System.out.println(type + "\t\t\t|" + weight * 100 + "%");
+                    type = rs.getString("type");
+                    title = rs.getString("title");
+                    points = rs.getInt("points");
+                    System.out.println(type + "\t\t|" + title + "\t\t|" + points);
                 }
             }
         }
@@ -422,7 +423,7 @@ public class GradeBook {
 
     @Command
     public void showStudents(String search) throws SQLException {
-        if(activeClass.getYear() != -1) {
+        if(activeClass.getYear() == -1) {
             System.out.println("No active class");
             return;
         }
