@@ -310,6 +310,7 @@ public class GradeBook {
     }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
 
+// START STUDENTS---------------------------------------------------------------------------------------------------------
     @Command
     public void newStudent(String username, int stuId, String name) throws SQLException {
         Boolean alreadyIsStudent = false;
@@ -349,27 +350,21 @@ public class GradeBook {
 
     @Command
     public void showStudents() throws SQLException {
-        String fName = "";
-        String lName = "";
-        String queryCheck =
-                "SELECT * from student";
-        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    fName = rs.getString("f_name");
-                    lName = rs.getString("l_name");
-                    System.out.printf("%s, %s%n", lName, fName);
-                }
-            }
-        }
+        showStudents("");
     }
 
     @Command
     public void showStudents(String search) throws SQLException {
         String fName = "";
         String lName = "";
-        String query =
-                "SELECT * from student WHERE f_name ILIKE ('%' ||'\" + search  + \"'|| '%') OR l_name ILIKE ('%' ||'\" + search  + \"'|| '%')username ILIKE ('%' ||'" + search  + "'|| '%') ORDER BY l_name";
+        String query;
+        if(search.equals("")){
+            query =
+                "SELECT * from student";
+        }else{
+            query =
+                    "SELECT * from student WHERE f_name ILIKE ('%' ||'\" + search  + \"'|| '%') OR l_name ILIKE ('%' ||'\" + search  + \"'|| '%')username ILIKE ('%' ||'" + search  + "'|| '%') ORDER BY l_name";
+        }
         try (PreparedStatement stmt = db.prepareStatement(query)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -381,6 +376,8 @@ public class GradeBook {
         }
     }
 }
+// END STUDENTS---------------------------------------------------------------------------------------------------------
+
 //SELECT * from student WHERE f_name LIKE searchQ OR l_name LIKE 'searchQ' OR username LIKE 'searchQ' ORDER BY l_name"
 //    @Command
 //    public void findDonor(String donorName) throws SQLException {
