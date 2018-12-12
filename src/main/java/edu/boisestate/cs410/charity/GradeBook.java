@@ -230,7 +230,6 @@ public class GradeBook {
             System.out.println("Adding a new section");
             String query =
                     "insert into section (number, c_id) values (" + number + ", " + c_id + ")";
-            System.out.println(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
@@ -279,6 +278,45 @@ public class GradeBook {
         }
     }
 
+//  add-category a 1
+    @Command
+    public void addCategory(String type, double weight) throws SQLException {
+        Boolean alreadyACat = false;
+        int sec_id = -1;
+        String queryCheck =
+                "SELECT * from type where type='"+ type +"'";
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    System.out.println("This category already exists, updating weight");
+                    String updateQuery = "update type set weight="+weight+" from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
+                    alreadyACat = true;
+                    System.out.print(updateQuery);
+                    try (PreparedStatement s = db.prepareStatement(updateQuery)) {
+                        s.executeUpdate();
+                    }
+                }
+            }
+        }
+
+        if(!alreadyACat) {
+            System.out.println("Adding a new category");
+            String query =
+                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
+            try (PreparedStatement stmt = db.prepareStatement(query)) {
+                stmt.executeUpdate();
+            }
+
+            try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        sec_id  = rs.getInt("sec_id");
+                    }
+                }
+            }
+
+        }
+    }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
 
 //    @Command
