@@ -308,6 +308,61 @@ public class GradeBook {
             }
         }
     }
+
+    @Command
+    public void showItems() throws SQLException {
+        String queryCheck;
+        String type;
+        String weight;
+        int tot_points;
+        int rec_points;
+
+        queryCheck =
+                "select type, weight from type join section using(sec_id) where sec_id="+activeSecId+"";
+
+        System.out.println("TYPE\t\t\t|WEIGHT");
+        System.out.println("========================");
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+//                    type = rs.getString("type");
+//                    weight = rs.getDouble("weight");
+//                        System.out.println(type + "\t\t\t|" + weight * 100 + "%");
+                }
+            }
+        }
+    }
+//select type as category, title, rec_points, tot_points  from assignment join type USING(t_id) join section USING(sec_id) where sec_id='318'
+//order by(type)
+    @Command
+    public void addItem(String type, double weight) throws SQLException {
+        Boolean alreadyACat = false;
+        int sec_id = -1;
+        String queryCheck =
+                "SELECT * from type where type='"+ type +"'";
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    System.out.println("This item already exists, updating weight");
+                    String updateQuery = "update type set weight="+weight+" from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
+                    alreadyACat = true;
+                    System.out.print(updateQuery);
+                    try (PreparedStatement s = db.prepareStatement(updateQuery)) {
+                        s.executeUpdate();
+                    }
+                }
+            }
+        }
+
+        if(!alreadyACat) {
+            System.out.println("Adding a new item");
+            String query =
+                    "insert into type (type, weight, sec_id) values ('"+type+"', "+weight+", "+activeSecId+");";
+            try (PreparedStatement stmt = db.prepareStatement(query)) {
+                stmt.executeUpdate();
+            }
+        }
+    }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
 
 // START STUDENTS---------------------------------------------------------------------------------------------------------
