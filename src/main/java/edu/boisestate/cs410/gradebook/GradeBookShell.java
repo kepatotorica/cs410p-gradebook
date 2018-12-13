@@ -11,14 +11,14 @@ import java.util.List;
 /**
  * @author Kepat, Alecw
  */
-public class GradeBook {
+public class GradeBookShell {
     private final Connection db;
     private static Class activeClass;
     private static Class prevClass;
     private static int activeSecId;
     private static int activeSecNum;
 
-    public GradeBook(Connection cxn) {
+    public GradeBookShell(Connection cxn) {
         db = cxn;
     }
 
@@ -28,7 +28,7 @@ public class GradeBook {
         activeClass = new Class("name", "term", -1, "description");
         prevClass = new Class("name", "term", -1, "description");
         try (Connection cxn = DriverManager.getConnection("jdbc:" + dbUrl)) {
-            GradeBook shell = new GradeBook(cxn);
+            GradeBookShell shell = new GradeBookShell(cxn);
             ShellFactory.createConsoleShell("grades", "", shell)
                     .commandLoop();
         }
