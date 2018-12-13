@@ -1,55 +1,3 @@
-//-- select-class Thia Summer 1992 8
-//-- add-item new project description 100
-//
-//
-//--   select title, type, description, points, t_id from assignment
-//--  join type USING(t_id)
-//--  join section USING(sec_id)
-//--  where sec_id='318' and type='project'
-//--  order by(type);
-//
-//-- update item set recieved=38 from section where section.sec_id='"+activeSecId+"' and type='"+type+"';";
-//-- Select * from section join type USING(sec_id)
-//-- where section.sec_id='318' and type='test' and title='Senior Developer'
-//
-//-- update assignment
-//-- set description='new!!', points=100
-//-- from section join type USING(sec_id)
-//-- where section.sec_id='318' and type='test' and title='Senior Developer';
-//
-//--  select title, type, description, points, t_id from assignment
-//--  join type USING(t_id)
-//--  join section USING(sec_id)
-//--  where sec_id='318' and type='test' and title='Senior Developer'
-//--  order by(type);
-//
-//
-//--  select title, type, description, points, t_id from assignment
-//--  join type USING(t_id)
-//--  join section USING(sec_id)
-//--  where sec_id='318' and type='test'
-//--  order by(type);
-//
-//--  Select t_id from type Join section using(sec_id) where sec_id='318' and type='test' LIMIT 1;
-//-- Select t_id from type Join section using(sec_id) where sec_id='318' and type='test' LIMIT 1
-//--  insert into assignment (description, title, points, t_id)
-//--  values ('desc', 'title', 49, 267);
-//
-//--  insert into assignment (description, title, points, t_id)
-//--  Select 'desc', 'title', 48, t_id from type Join section using(sec_id)
-//--  where sec_id='318' and type='test' LIMIT 1;
-//
-//-- select-class Thia Summer 1992 8
-//-- add-item new project description 100
-//
-//
-// select title, type, description, points, t_id from assignment
-// join type USING(t_id)
-// join section USING(sec_id)
-// where sec_id='318' and type='project'
-// order by(type);
-
-
 package edu.boisestate.cs410.gradebook;
 
 import com.budhash.cliche.Command;
@@ -79,7 +27,6 @@ public class GradeBook {
         activeSecId = -1;
         activeClass = new Class("name", "term", -1, "description");
         prevClass = new Class("name", "term", -1, "description");
-//        prevClass.copy(activeClass);
         try (Connection cxn = DriverManager.getConnection("jdbc:" + dbUrl)) {
             GradeBook shell = new GradeBook(cxn);
             ShellFactory.createConsoleShell("grades", "", shell)
@@ -87,16 +34,8 @@ public class GradeBook {
         }
     }
 
-// in:   new-class Nathaniel Spring 2006 1 desc
-// not:  new-class Nathaniel Spring 2007 1 desc
-// not:  new-class Nathaniel Spring 2008 1 desc
 
-//    select-class Nathaniel : Spring 2008 & success
-//    select-class Nathaniel Spring 2007 : Spring 2007 & fail
-//    select-class Nathaniel Fall 1995 86 & success
-
-
-    //START CLASS---------------------------------------------------------------------------------------------------------
+//START CLASS---------------------------------------------------------------------------------------------------------
     @Command
     public void selectClass(String pName) throws SQLException {
         selectClass(pName, "None", -1, -1);
@@ -288,7 +227,6 @@ public class GradeBook {
                     activeSecId = sec_id;
                     activeSecNum = rs.getInt("number");
                 }
-//                System.out.println("any matches? " + alreadyASection );
             }
         }
 
@@ -317,7 +255,7 @@ public class GradeBook {
 
 //END CLASS---------------------------------------------------------------------------------------------------------
 
-    //START CATEGORIES---------------------------------------------------------------------------------------------------------
+//START CATEGORIES---------------------------------------------------------------------------------------------------------
     // select-class Thia Summer 1992 8
     // add-item new project description 100
     // show-categories
@@ -347,7 +285,7 @@ public class GradeBook {
         }
     }
 
-    //  add-category a 1
+    //  add-category kepa 1
     @Command
     public void addCategory(String type, double weight) throws SQLException {
         Boolean alreadyACat = false;
@@ -364,7 +302,6 @@ public class GradeBook {
                                     " where section.sec_id='" + activeSecId + "' " +
                                     "and type='" + type + "';";
                     alreadyACat = true;
-//                    System.out.print(updateQuery);
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
                         s.executeUpdate();
                     }
@@ -453,7 +390,6 @@ public class GradeBook {
                             "t_id from type Join section using(sec_id) " +
                             "where sec_id='" + activeSecId + "' " +
                             "and type='" + type + "' LIMIT 1";
-//            System.out.println(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
@@ -461,14 +397,13 @@ public class GradeBook {
     }
 // END CATEGORIES---------------------------------------------------------------------------------------------------------
 
-    // START STUDENTS---------------------------------------------------------------------------------------------------------
+// START STUDENTS---------------------------------------------------------------------------------------------------------
 //    select-class Thia Summer 1992 8
 //    add-student kepa 1009 "kepa, totorica"
     @Command
     public void addStudent(String username, int stuId, String name) throws SQLException {
         Boolean alreadyIsStudent = false;
         String queryCheck = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = '"+stuId+"'";
-//        System.out.println(queryCheck);
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -479,7 +414,6 @@ public class GradeBook {
         Boolean alreadyInSection = false;
         if (alreadyIsStudent) {
             String queryCheck2 = "Select * from student join enrolled using (stu_id) join section using (sec_id) Where stu_id = '"+stuId+"' AND sec_id = '"+activeSecId+"'";
-//            System.out.println(queryCheck2);
             try (PreparedStatement stmt = db.prepareStatement(queryCheck2)) {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
@@ -491,14 +425,12 @@ public class GradeBook {
             String[] fullName;
             fullName = name.split(", ");
             String query = "insert into student (stu_id, f_name, l_name, username) values ('" + stuId + "', '" + fullName[0] + "', '" + fullName[1] + "','" + username + "')";
-//            System.out.println(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
         }
         if (!alreadyInSection) {
             String insertQuery = "Insert into enrolled (stu_id,sec_id) values ("+stuId+","+activeSecId+")";
-//            System.out.println(insertQuery);
             try (PreparedStatement stmt = db.prepareStatement(insertQuery)) {
                 stmt.executeUpdate();
             }
@@ -544,10 +476,6 @@ public class GradeBook {
         }
     }
 
-
-//   stu: 839 a: 871
-//    username vfantinina
-//    grade new vfantinina 100
     @Command
     public void grade(String title, String username, int points) throws SQLException {
         Boolean alreadyAGrade = false;
@@ -560,7 +488,6 @@ public class GradeBook {
                 "join student Using(stu_id) "+
                 "where sec_id='" + activeSecId + "' and title='" + title + "' and username='"+username+"'" +
                 "order by(type) ";
-//            System.out.println(queryCheck);
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -573,12 +500,6 @@ public class GradeBook {
                             "join grade using(a_id) "+
                             "join student using(stu_id) "+
                             "where sec_id='"+activeSecId+"' and title='"+title+"' and username='"+username+"')";
-//                    System.out.println(updateQuery);
-//                    System.out.println(updateQuery);
-//                            "update grade " +
-//                            "set points=" + points + " " +
-//                            "from section join type USING(sec_id) " +
-//                            "where section.sec_id='" + activeSecId + "' and title='" + title + "' and username='" + username + "' ";
                     alreadyAGrade = true;
                     try (PreparedStatement s = db.prepareStatement(updateQuery)) {
                         s.executeUpdate();
@@ -599,7 +520,6 @@ public class GradeBook {
                 "where sec_id='"+activeSecId+"' and title='"+title+"' and username='"+username+"' "+
                 "LIMIT 1 ";
 
-//            System.out.print(query);
             try (PreparedStatement stmt = db.prepareStatement(query)) {
                 stmt.executeUpdate();
             }
@@ -620,7 +540,6 @@ public void studentGrades(String username1) throws SQLException {
         return;
     }
 
-//    ArrayList<ArrayList<String>> types = new ArrayList<>();
     String pType = "";
     String query = "";
     String type = "";
@@ -747,16 +666,6 @@ public void studentGrades(String username1) throws SQLException {
     public void gradebook() throws SQLException {
         System.out.println("Gradebook:");
         studentGrades("-1");
-//        if (activeClass.getYear() == -1) {
-//            System.out.println("No active class");
-//            return;
-//        }
-//
-//
-//        String query;
-//        query =
-//                "SELECT * from student join enrolled using(stu_id) join section using(sec_id) where sec_id='"+activeSecId+"'";
-
     }
 
 
@@ -779,14 +688,6 @@ public void studentGrades(String username1) throws SQLException {
                             "where sec_id="+activeSecId+" and username='"+username+"'\n" +
                             "Group by( type, weight)\n" +
                             "Order by type";
-//                    "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from assignment \n" +
-//                            "join type using(t_id) \n" +
-//                            "join enrolled using(sec_id) \n" +
-//                            "join student using(stu_id) \n" +
-//                            "left join grade using(a_id) \n" +
-//                            "where username='" + username + "' and grade.stu_id=student.stu_id and sec_id=" + activeSecId + " \n" +
-//                            "Group by( type, weight)\n" +
-//                            "Order by type";
         }else{
             queryCheck =
                     "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from student\n" +
@@ -819,16 +720,14 @@ public void studentGrades(String username1) throws SQLException {
 // END REPORT---------------------------------------------------------------------------------------------------------
     @Command
     public void s() throws SQLException {
-        //    username vfantinina
         selectClass("Thia", "Summer", 1992, 8);
 //        add-item guud test description 200
 //        addItem("should","test", "desc",200);
-        //    grade new kepa1 100
+//        grade new kepa1 100
 //        grade("new","vfantinina",100)
-
 //        showStudents();
-        // student-grades kepa1
-        // student-grades vfantinina
+//        student-grades kepa1
+//        student-grades vfantinina
 //        grade("new", "kepa1", (int) (Math.random() * 200));
 //        studentGrades("kepa1");
 //        gradebook();
