@@ -752,7 +752,7 @@ public void studentGrades(String username1) throws SQLException {
                     }
                     if(username1 != "-1") {
                         System.out.println("\t\tGrade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * subTotalRec / subTotalPos + "%");
-                        System.out.printf("\nClass Grade: \n\t\t%.2f%%", total);
+                        System.out.printf("\nClass Grade: \n\t\t%.2f%%\n\n", total);
                     }else{
                         System.out.printf("\t%-22s%-22s%-22s%-22s%.2f%%\n", username, stu_id, f_name, l_name, total);
                     }
@@ -769,6 +769,7 @@ public void studentGrades(String username1) throws SQLException {
 
     @Command
     public void gradebook() throws SQLException {
+        System.out.println("Gradebook:");
         studentGrades("-1");
 //        if (activeClass.getYear() == -1) {
 //            System.out.println("No active class");
