@@ -751,8 +751,8 @@ public void studentGrades(String username1) throws SQLException {
                         total = 0;
                     }
                     if(username1 != "-1") {
-                        System.out.println("\t\tGrade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * subTotalRec / subTotalPos + "%\n");
-                        System.out.printf("\tOverall Grade: %.2f%%\n", total);
+                        System.out.println("\t\tGrade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * subTotalRec / subTotalPos + "%");
+                        System.out.printf("\nClass Grade: \n\t\t%.2f%%", total);
                     }else{
                         System.out.printf("\t%-22s%-22s%-22s%-22s%.2f%%\n", username, stu_id, f_name, l_name, total);
                     }
