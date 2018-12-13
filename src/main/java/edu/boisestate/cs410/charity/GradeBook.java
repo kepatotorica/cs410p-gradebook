@@ -537,7 +537,6 @@ public class GradeBook {
                     lName = rs.getString("l_name");
                     uName = rs.getString("username");
                     stuId = rs.getInt("stu_id");
-//                    System.out.printf("%d, %s (%s, %s)%n", stuId, uName, lName, fName);
                     System.out.printf("\t%-22s%-22d%-22s %-22s\n", uName, stuId, lName, fName);
 
                 }
