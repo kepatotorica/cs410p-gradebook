@@ -635,16 +635,16 @@ public void studentGrades(String username1) throws SQLException {
     int pRec = 0;
     int points = 0;
     double totalWeight = 0;
-    List<Double> weights;
-    List<Double> totals;
+    List<List<Double>> weights;
+//    List<Double> totals;
 
 
 
     int stu_id = -1;
 
     if(username1 == "-1"){
-        System.out.printf("\n\n\t%-22s%-22s%-22s%-22s%-22s%-22s\n", "username", "student id", "first name", "last name", "Point Ratio", "Percentage");
-        System.out.println("\t===============================================================================================================================");
+        System.out.printf("\n\n\t%-22s%-22s%-22s%-22s%-22s\n", "username", "student id", "first name", "last name", "Grade");
+        System.out.println("\t================================================================================================");
         query =
                 "select stu_id, f_name, l_name, username from student " +
                         "join enrolled using(stu_id) " +
@@ -663,22 +663,18 @@ public void studentGrades(String username1) throws SQLException {
     try (PreparedStatement stmt = db.prepareStatement(query)) {
         try (ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-//                System.out.println("Found student in this class!");
                 stu_id = rs.getInt("stu_id");
                 f_name = rs.getString("f_name");
                 l_name = rs.getString("l_name");
                 username = rs.getString("username");
                 subTotalPos = 0;
                 subTotalRec = 0;
-//                totalPos =0;
-//                totalRec =0;
                 secPoints = 0;
                 totalWeight = 0;
                 pType="";
                 pRec = 0;
                 points = 0;
                 weights = new ArrayList<>();
-                totals = new ArrayList<>();
 
                 if(stu_id != -1){//if we found a matching user
                     if(username1 != "-1") {
@@ -698,11 +694,11 @@ public void studentGrades(String username1) throws SQLException {
                             while (rs1.next()) {
                                 type = rs1.getString("type");
                                 if(!pType.equals(type)){
-                                    weights.add(rs1.getDouble("weight"));
-                                    totalWeight += rs1.getDouble("weight");
+                                    List<Double> totals = new ArrayList<>();
+                                    weights.add(totals);
                                     if(subTotalPos != 0){
                                         if(username1 != "-1") {
-                                            System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0 * subTotalRec) / subTotalPos + "%");
+                                            System.out.println("\t\tGrade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0 * subTotalRec) / subTotalPos + "%");
                                         }
                                         totals.add(((1.0)*subTotalRec)/subTotalPos);
                                     }else{
@@ -712,10 +708,9 @@ public void studentGrades(String username1) throws SQLException {
                                     if(username1 != "-1") {
                                         System.out.println("\n" + type + ":");
                                         System.out.printf("\t%-22s%-22s%-22s\n", "Name", "Recieved", "Possible");
+                                        System.out.println("\t======================================================");
                                     }
                                     pType = type;
-//                                    totalPos += subTotalPos;
-//                                    totalRec += subTotalRec;
                                     subTotalPos = 0;
                                     subTotalRec = 0;
                                 }
@@ -741,33 +736,28 @@ public void studentGrades(String username1) throws SQLException {
                         }
                     }
 
-//                    totalPos += subTotalPos;
-//                    totalRec += subTotalRec;
+                    List<Double> totals = new ArrayList<>();
+                    weights.add(totals);
                     double total = 0;
                     if(subTotalPos == 0){
                         totals.add(0.0);
                     }else{
                         totals.add(((1.0)*subTotalRec)/subTotalPos);
                     }
-                    System.out.println(totalWeight);
+//                    System.out.println(((1.0)*subTotalRec)/subTotalPos);
                     for(int i = 0; i < weights.size(); i++){
-                        secPoints = totals.get(i) * weights.get(i)/totalWeight;
-//                        System.out.println("WEIGHT: " + weights.get(i));
-//                        System.out.println("\tpercent of total = " + weights.get(i)/totalWeight);
-//                        System.out.println("\t" + i + " got "+ totals.get(i) + " increased by " + secPoints);
-                        total+=100*secPoints;
+//                        secPoints = totals.get(i) * weights.get(i)/totalWeight;
+//                        total+=100*secPoints;
                     }
 
-//                    double total = 100 * (1.0* totalRec)/totalPos;
                     if(subTotalPos == 0){
                         total = 0;
                     }
                     if(username1 != "-1") {
-                        System.out.println("Grade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0 * subTotalRec) / subTotalPos + "%\n");
+                        System.out.println("\t\tGrade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * (1.0 * subTotalRec) / subTotalPos + "%\n");
                         System.out.printf("\tOverall Grade: %.2f%%\n", total);
                     }else{
                         System.out.printf("\t%-22s%-22s%-22s%-22s%.2f%%\n", username, stu_id, f_name, l_name, total);
-//                        System.out.printf("\t%-22s%-22s%-22s%-22s%-22s%.2f%%\n", username, stu_id, f_name, l_name, totalRec +"/"+ totalPos + " =", total);
                     }
 
 
