@@ -683,7 +683,6 @@ public void studentGrades(String username1) throws SQLException {
                                     "left join grade using(a_id) " +
                                     "where username='"+username+"' and grade.stu_id=student.stu_id and sec_id="+activeSecId+" " +
                                     "Order by type";
-                    System.out.println(query);
                     try (PreparedStatement stmt1 = db.prepareStatement(query)) {
                         try (ResultSet rs1 = stmt1.executeQuery()) {
                             while (rs1.next()) {
