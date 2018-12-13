@@ -407,13 +407,17 @@ public class GradeBook {
 
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
-                System.out.println("\tcategory\t|\ttitle\t|\tpoints");
-                System.out.println("================================================");
+//                System.out.println("\tcategory\t|\ttitle\t|\tpoints");
+//                System.out.println("================================================");
+                System.out.printf("\t%-22s%-22s%-22s\n", "Category","title", "Possible");
+                System.out.println("\t======================================================");
                 while (rs.next()) {
                     type = rs.getString("type");
                     title = rs.getString("title");
                     points = rs.getInt("points");
-                    System.out.println(type + "\t\t|" + title + "\t\t|" + points);
+//                    System.out.println(type + "\t\t|" + title + "\t\t|" + points);
+                    System.out.printf("\t%-22s%-22s%-22d\n", type, title, points);
+                    System.out.println("\t======================================================");
                 }
             }
         }
@@ -520,6 +524,7 @@ public class GradeBook {
             System.out.println("No active class");
             return;
         }
+        System.out.println("Students:");
         String fName = "";
         String lName = "";
         String uName = "";
@@ -540,6 +545,8 @@ public class GradeBook {
                     uName = rs.getString("username");
                     stuId = rs.getInt("stu_id");
 //                    System.out.printf("%d, %s (%s, %s)%n", stuId, uName, lName, fName);
+                    System.out.printf("\n\n\t%-22d%-22s(%-22s,%-22s)\n", uName, stuId, lName, fName);
+                    System.out.println("\t================================================================================");
                 }
             }
         }
