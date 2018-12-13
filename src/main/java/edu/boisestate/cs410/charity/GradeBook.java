@@ -647,8 +647,8 @@ public void studentGrades(String username1) throws SQLException {
     int stu_id = -1;
 
     if(username1 == "-1"){
-        System.out.printf("\n\n\t%-22s%-22s%-22s%-22s%-22s\n", "username", "student id", "first name", "last name", "Grade");
-        System.out.println("\t================================================================================================");
+        System.out.printf("\n\n\t%-22s%-22s%-22s%-22s%-22s%-22s\n", "username", "student id", "first name", "last name", "Overall Grade(%)", "Attempted Grade(%)");
+        System.out.println("\t=================================================================================================================================");
         query =
                 "select stu_id, f_name, l_name, username from student " +
                         "join enrolled using(stu_id) " +
@@ -738,7 +738,7 @@ public void studentGrades(String username1) throws SQLException {
                         System.out.println("\t\tGrade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * subTotalRec / subTotalPos + "%");
                         System.out.printf("\nClass Grade: \n\t\toverall: %.2f%% attempted: %.2f%%\n\n", total, atTotal);
                     }else{
-                        System.out.printf("\t%-22s%-22s%-22s%-22s%-22.2f%%%-22.2f%%\n", username, stu_id, f_name, l_name, total, atTotal);
+                        System.out.printf("\t%-22s%-22s%-22s%-22s%-22.2f%.2f\n", username, stu_id, f_name, l_name, total, atTotal);
                     }
 
 
@@ -837,8 +837,8 @@ public void studentGrades(String username1) throws SQLException {
         // student-grades kepa1
         // student-grades vfantinina
 //        grade("new", "kepa1", (int) (Math.random() * 200));
-        studentGrades("kepa1");
-//        gradebook();
+//        studentGrades("kepa1");
+        gradebook();
     }
 
 }
