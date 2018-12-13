@@ -1,4 +1,4 @@
-package edu.boisestate.cs410.charity;
+package edu.boisestate.cs410.gradebook;
 
 public class Class {
     private int c_id;

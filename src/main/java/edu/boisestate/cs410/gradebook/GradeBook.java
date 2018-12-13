@@ -50,7 +50,7 @@
 // order by(type);
 
 
-package edu.boisestate.cs410.charity;
+package edu.boisestate.cs410.gradebook;
 
 import com.budhash.cliche.Command;
 import com.budhash.cliche.ShellFactory;
