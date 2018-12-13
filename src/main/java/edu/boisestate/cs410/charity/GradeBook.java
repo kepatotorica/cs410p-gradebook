@@ -530,6 +530,8 @@ public class GradeBook {
         String uName = "";
         int stuId = -1;
         String query;
+        System.out.printf("\n\n\t%-22s%-22s%-22s%-22s\n", "Username", "student id", "last name", "first name");
+        System.out.println("\t================================================================================");
         if (search.equals("")) {
             query =
                     "SELECT * from student join enrolled using(stu_id) join section using(sec_id) where sec_id='"+activeSecId+"'";
@@ -545,8 +547,8 @@ public class GradeBook {
                     uName = rs.getString("username");
                     stuId = rs.getInt("stu_id");
 //                    System.out.printf("%d, %s (%s, %s)%n", stuId, uName, lName, fName);
-                    System.out.printf("\n\n\t%-22d%-22s(%-22s,%-22s)\n", uName, stuId, lName, fName);
-                    System.out.println("\t================================================================================");
+                    System.out.printf("\t%-22s%-22d%-22s %-22s\n", uName, stuId, lName, fName);
+
                 }
             }
         }
@@ -839,7 +841,8 @@ public void studentGrades(String username1) throws SQLException {
         // student-grades vfantinina
 //        grade("new", "kepa1", (int) (Math.random() * 200));
 //        studentGrades("kepa1");
-        gradebook();
+//        gradebook();
+        showStudents();
     }
 
 }
