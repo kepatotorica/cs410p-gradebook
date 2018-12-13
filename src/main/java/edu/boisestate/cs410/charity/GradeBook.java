@@ -632,14 +632,14 @@ public void studentGrades(String username1) throws SQLException {
     String username = username1;
     double subTotalPos = 0;
     double subTotalRec = 0;
-//    double totalPos =0;
-//    double totalRec =0;
+    double subTotalAttempted = 0;
     double secPoints =0;
     int pRec = 0;
     int points = 0;
     double totalWeight = 0;
     List<Double> weights;
     List<Double> totals;
+    List<Double> totalAttempt;
 
 
 
@@ -672,13 +672,9 @@ public void studentGrades(String username1) throws SQLException {
                 username = rs.getString("username");
                 subTotalPos = 0;
                 subTotalRec = 0;
-                secPoints = 0;
-                totalWeight = 0;
                 pType="";
                 pRec = 0;
                 points = 0;
-                weights = new ArrayList<>();
-                totals = new ArrayList<>();
 
                 if(stu_id != -1){//if we found a matching user
                     if(username1 != "-1") {
@@ -698,13 +694,10 @@ public void studentGrades(String username1) throws SQLException {
                             while (rs1.next()) {
                                 type = rs1.getString("type");
                                 if(!pType.equals(type)){
-                                    weights.add(rs1.getDouble("weight"));
-                                    totalWeight += rs1.getDouble("weight");
                                     if(subTotalPos != 0){
                                         if(username1 != "-1") {
                                             System.out.println("\t\tGrade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * subTotalRec / subTotalPos + "%");
                                         }
-                                        totals.add(subTotalRec/subTotalPos);
                                     }
 
                                     if(username1 != "-1") {
@@ -729,6 +722,7 @@ public void studentGrades(String username1) throws SQLException {
                                     pRec = Integer.parseInt(recieved);
                                     if(username1 != "-1") {
                                         System.out.printf("\t%-22s%-22s%-22s\n", title, pRec, points);
+                                        subTotalAttempted += points;
                                     }
                                     subTotalRec += pRec;
                                 }
@@ -738,28 +732,15 @@ public void studentGrades(String username1) throws SQLException {
                         }
                     }
 
-                    double total = 0;
-                    if(subTotalPos == 0){
-                        totals.add(0.0);
-                    }else{
-                        totals.add(subTotalRec/subTotalPos);
-                    }
-                    for(int i = 0; i < weights.size(); i++){
-                        secPoints = totals.get(i) * weights.get(i)/totalWeight;
-                        total+=100*secPoints;
-                    }
 
-
-                    if(subTotalPos == 0){
-                        total = 0;
-                    }
+                    double atTotal = getTotal(username, 1);
+                    double total = getTotal(username, -1);
                     if(username1 != "-1") {
                         System.out.println("\t\tGrade for " + pType + ": " + subTotalRec + "/" + subTotalPos + " = " + 100 * subTotalRec / subTotalPos + "%");
-                        System.out.printf("\nClass Grade: \n\t\t%.2f%%\n\n", total);
+                        System.out.printf("\nClass Grade: \n\t\toverall: %.2f%% attempted: %.2f%%\n\n", total, atTotal);
                     }else{
-                        System.out.printf("\t%-22s%-22s%-22s%-22s%.2f%%\n", username, stu_id, f_name, l_name, total);
+                        System.out.printf("\t%-22s%-22s%-22s%-22s%-22.2f%%%-22.2f%%\n", username, stu_id, f_name, l_name, total, atTotal);
                     }
-
 
 
                 }else{
@@ -786,14 +767,51 @@ public void studentGrades(String username1) throws SQLException {
 
     }
 
-    @Command
-    public void gradeTotal() throws SQLException {
-            studentGrades("-1");
-    }
 
     @Command
-    public void addGrades(String stu_id){
+    public double getTotal(String username, int flag) throws SQLException {
+        String queryCheck;
+        double tot = 0;
+        double totalWeight = 0;
+        List<Double> weights = new ArrayList<>();
+        List<Double> totals = new ArrayList<>();
 
+        if(flag == 1) {
+            queryCheck =
+                    "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from assignment \n" +
+                            "join type using(t_id) \n" +
+                            "join enrolled using(sec_id) \n" +
+                            "join student using(stu_id) \n" +
+                            "left join grade using(a_id) \n" +
+                            "where username='" + username + "' and grade.stu_id=student.stu_id and sec_id=" + activeSecId + " \n" +
+                            "Group by( type, weight)\n" +
+                            "Order by type";
+        }else{
+            queryCheck =
+                    "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from assignment \n" +
+                            "join type using(t_id) \n" +
+                            "join enrolled using(sec_id) \n" +
+                            "join student using(stu_id) \n" +
+                            "left join grade using(stu_id) \n" +
+                            "where username='" + username + "' and sec_id=" + activeSecId + " \n" +
+                            "Group by( type, weight)\n" +
+                            "Order by type";
+        }
+        try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    totalWeight += rs.getDouble("weight");
+                    weights.add(rs.getDouble("weight"));
+                    totals.add(rs.getDouble("points"));
+                }
+            }
+        }
+
+        for(int i = 0; i < weights.size(); i++){
+            tot+=100*totals.get(i) * weights.get(i)/totalWeight;
+        }
+
+        return tot;
     }
 
 // END REPORT---------------------------------------------------------------------------------------------------------
@@ -801,16 +819,16 @@ public void studentGrades(String username1) throws SQLException {
     public void s() throws SQLException {
         //    username vfantinina
         selectClass("Thia", "Summer", 1992, 8);
-        addItem("should","test", "desc",200);
+//        addItem("should","test", "desc",200);
         //    grade new kepa1 100
 //        grade("new","vfantinina",100)
 
-        showStudents();
+//        showStudents();
         // student-grades kepa1
         // student-grades vfantinina
-        grade("new", "kepa1", (int) (Math.random() * 200));
+//        grade("new", "kepa1", (int) (Math.random() * 200));
         studentGrades("kepa1");
-        gradebook();
+//        gradebook();
     }
 
 }
