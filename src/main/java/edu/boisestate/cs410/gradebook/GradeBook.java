@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Kepat
+ * @author Kepat, Alecw
  */
 public class GradeBook {
     private final Connection db;
