@@ -60,6 +60,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Kepat
+ */
 public class GradeBook {
     private final Connection db;
     private static Class activeClass;
