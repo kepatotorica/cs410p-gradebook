@@ -336,16 +336,12 @@ public class GradeBook {
 
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
-                System.out.println("TYPE\t\t\t|WEIGHT");
-                System.out.println("========================");
+                System.out.printf("\n\n\t%-22s%-22s\n", "Type", "Weight");
+                System.out.println("\t================================");
                 while (rs.next()) {
                     type = rs.getString("type");
                     weight = rs.getDouble("weight");
-                    if (type.length() >= "extra credit".length()) {
-                        System.out.println(type + "\t|" + weight * 100 + "%");
-                    } else {
-                        System.out.println(type + "\t\t\t|" + weight * 100 + "%");
-                    }
+                        System.out.printf("\t%-22s%s%%\n", type, weight * 100);
                 }
             }
         }
@@ -405,17 +401,14 @@ public class GradeBook {
                         " order by(type)";
 
 
+        System.out.printf("\n\n\t%-22s%-22s%-22s\n", "Category","title", "Possible");
+        System.out.println("\t======================================================");
         try (PreparedStatement stmt = db.prepareStatement(queryCheck)) {
             try (ResultSet rs = stmt.executeQuery()) {
-//                System.out.println("\tcategory\t|\ttitle\t|\tpoints");
-//                System.out.println("================================================");
-                System.out.printf("\t%-22s%-22s%-22s\n", "Category","title", "Possible");
-                System.out.println("\t======================================================");
                 while (rs.next()) {
                     type = rs.getString("type");
                     title = rs.getString("title");
                     points = rs.getInt("points");
-//                    System.out.println(type + "\t\t|" + title + "\t\t|" + points);
                     System.out.printf("\t%-22s%-22s%-22d\n", type, title, points);
                 }
             }
@@ -523,7 +516,6 @@ public class GradeBook {
             System.out.println("No active class");
             return;
         }
-        System.out.println("Students:");
         String fName = "";
         String lName = "";
         String uName = "";
@@ -842,6 +834,9 @@ public void studentGrades(String username1) throws SQLException {
 //        studentGrades("kepa1");
 //        gradebook();
         showStudents();
+        showItems();
+        showCategories();
+        showClass();
     }
 
 }

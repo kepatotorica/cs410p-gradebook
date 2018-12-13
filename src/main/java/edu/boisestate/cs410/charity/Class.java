@@ -62,6 +62,6 @@ public class Class {
     }
 
     public String toString(){
-        return "\tName: <" + name + ">\n\tterm: <" + term + ">\n\tyear: <" + year + ">\n\tdescription: <" + description + ">\n";
+        return "\n\n\tName: <" + name + ">\n\tterm: <" + term + ">\n\tyear: <" + year + ">\n\tdescription: <" + description + ">\n";
     }
 }
