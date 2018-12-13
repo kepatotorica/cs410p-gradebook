@@ -417,7 +417,6 @@ public class GradeBook {
                     points = rs.getInt("points");
 //                    System.out.println(type + "\t\t|" + title + "\t\t|" + points);
                     System.out.printf("\t%-22s%-22s%-22d\n", type, title, points);
-                    System.out.println("\t======================================================");
                 }
             }
         }
