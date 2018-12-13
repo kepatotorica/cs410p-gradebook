@@ -632,14 +632,9 @@ public void studentGrades(String username1) throws SQLException {
     String username = username1;
     double subTotalPos = 0;
     double subTotalRec = 0;
-    double subTotalAttempted = 0;
-    double secPoints =0;
     int pRec = 0;
     int points = 0;
-    double totalWeight = 0;
-    List<Double> weights;
-    List<Double> totals;
-    List<Double> totalAttempt;
+
 
 
 
@@ -688,7 +683,7 @@ public void studentGrades(String username1) throws SQLException {
                                     "left join grade using(a_id) " +
                                     "where username='"+username+"' and grade.stu_id=student.stu_id and sec_id="+activeSecId+" " +
                                     "Order by type";
-
+                    System.out.println(query);
                     try (PreparedStatement stmt1 = db.prepareStatement(query)) {
                         try (ResultSet rs1 = stmt1.executeQuery()) {
                             while (rs1.next()) {
@@ -722,7 +717,6 @@ public void studentGrades(String username1) throws SQLException {
                                     pRec = Integer.parseInt(recieved);
                                     if(username1 != "-1") {
                                         System.out.printf("\t%-22s%-22s%-22s\n", title, pRec, points);
-                                        subTotalAttempted += points;
                                     }
                                     subTotalRec += pRec;
                                 }
@@ -778,22 +772,32 @@ public void studentGrades(String username1) throws SQLException {
 
         if(flag == 1) {
             queryCheck =
-                    "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from assignment \n" +
-                            "join type using(t_id) \n" +
-                            "join enrolled using(sec_id) \n" +
-                            "join student using(stu_id) \n" +
-                            "left join grade using(a_id) \n" +
-                            "where username='" + username + "' and grade.stu_id=student.stu_id and sec_id=" + activeSecId + " \n" +
+                    "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from student\n" +
+                            "join enrolled using (stu_id)\n" +
+                            "join section using (sec_id)\n" +
+                            "join type using(sec_id)\n" +
+                            "join assignment using(t_id)\n" +
+                            "join grade on(assignment.a_id = grade.a_id and student.stu_id = grade.stu_id)\n" +
+                            "where sec_id="+activeSecId+" and username='"+username+"'\n" +
                             "Group by( type, weight)\n" +
                             "Order by type";
+//                    "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from assignment \n" +
+//                            "join type using(t_id) \n" +
+//                            "join enrolled using(sec_id) \n" +
+//                            "join student using(stu_id) \n" +
+//                            "left join grade using(a_id) \n" +
+//                            "where username='" + username + "' and grade.stu_id=student.stu_id and sec_id=" + activeSecId + " \n" +
+//                            "Group by( type, weight)\n" +
+//                            "Order by type";
         }else{
             queryCheck =
-                    "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from assignment \n" +
-                            "join type using(t_id) \n" +
-                            "join enrolled using(sec_id) \n" +
-                            "join student using(stu_id) \n" +
-                            "left join grade using(stu_id) \n" +
-                            "where username='" + username + "' and sec_id=" + activeSecId + " \n" +
+                    "select (CAST(sum(recieved) as float)/ CAST(sum(points) as float)) as points, weight from student\n" +
+                            "join enrolled using (stu_id)\n" +
+                            "join section using (sec_id)\n" +
+                            "join type using(sec_id)\n" +
+                            "join assignment using(t_id)\n" +
+                            "left join grade on(assignment.a_id = grade.a_id and student.stu_id = grade.stu_id)\n" +
+                            "where sec_id="+activeSecId+" and username='"+username+"'\n" +
                             "Group by( type, weight)\n" +
                             "Order by type";
         }
@@ -819,6 +823,7 @@ public void studentGrades(String username1) throws SQLException {
     public void s() throws SQLException {
         //    username vfantinina
         selectClass("Thia", "Summer", 1992, 8);
+//        add-item guud test description 200
 //        addItem("should","test", "desc",200);
         //    grade new kepa1 100
 //        grade("new","vfantinina",100)
