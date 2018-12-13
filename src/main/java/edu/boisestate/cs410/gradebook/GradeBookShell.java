@@ -1,8 +1,6 @@
 package edu.boisestate.cs410.gradebook;
-
 import com.budhash.cliche.Command;
 import com.budhash.cliche.ShellFactory;
-
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -552,10 +550,6 @@ public void studentGrades(String username1) throws SQLException {
     double subTotalRec = 0;
     int pRec = 0;
     int points = 0;
-
-
-
-
     int stu_id = -1;
 
     if(username1 == "-1"){

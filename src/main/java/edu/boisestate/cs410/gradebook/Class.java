@@ -1,5 +1,8 @@
 package edu.boisestate.cs410.gradebook;
 
+/**
+ * @author Kepat, awlec
+ */
 public class Class {
     private int c_id;
     private String name;
